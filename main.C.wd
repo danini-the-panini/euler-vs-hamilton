@@ -166,8 +166,7 @@ To have something to look at, we will draw a simple quad.
 
 The quad is defined as a simple VAO.
 
-  <{ Quad }>=
-
+  <{ Setup }>+=
 
     int i = 0;
 
@@ -217,12 +216,6 @@ The quad is defined as a simple VAO.
     glEnableVertexAttribArray(POSITION_LOC);
     glVertexAttribPointer(POSITION_LOC, VERTEX_SIZE, GL_FLOAT, GL_FALSE,
             VERTEX_SIZE * sizeof(float), 0);
-
-### And making sure it gets created
-
-  <{ Setup }>+=
-
-    <{ Quad }>
 
 Some more constants
 -------------------
@@ -326,7 +319,7 @@ We are gonna need some shaders
     GLint projection_location = 0;
     GLint world_location = 0;
 
-  <{ Shaders }>=
+  <{ Setup }>+=
     shader_program = glCreateProgram();
 
     GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -378,11 +371,6 @@ We are gonna need some shaders
       "{\n"
         "colour = vec4(1,0,1,1);\n"
       "}\n";
-
-### Now add that to the Setup
-
-  <{ Setup }>+=
-    <{ Shaders }>
 
 Include all the things
 ----------------------
