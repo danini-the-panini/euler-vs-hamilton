@@ -15,6 +15,3 @@ all: main
 
 main: main.C
 	${CC} $^ ${LDFLAGS} -o main ${LDLIBS}
-
-main.C: main.C.wd
-	../WEBdown/tangle main.C.wd > main.C
