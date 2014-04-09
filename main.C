@@ -88,9 +88,9 @@ tmat4x4<T> quaternion_rotate(T angle, tvec3<T> axis)
 int main()
 {
 
-  const float fovy = 45.0f;
+  const float fovy = 45.f;
   const float near = 1.f;
-  const float far = 100.0f;
+  const float far = -100.f;
 
   const GLuint VERTEX_SIZE = 3;
   const GLuint NUM_VERTICES = 4;
@@ -109,6 +109,7 @@ int main()
     "void main()\n"
     "{\n"
       "gl_Position = projection * view * world * vec4(position,1.0f);\n"
+      // "gl_Position = vec4(position,1.0f);\n"
     "}\n";
   const char *fragment_glsl =
     "#version 430\n"
@@ -123,8 +124,8 @@ int main()
   Camera<float> camera;
 
   GLuint quad = 0;
-  float* verts = new float[VERTEX_ARRAY_SIZE];
-  float* faces = new float[INDEX_ARRAY_SIZE];
+  GLfloat* verts = new GLfloat[VERTEX_ARRAY_SIZE];
+  GLuint* faces = new GLuint[INDEX_ARRAY_SIZE];
 
   int width = 0;
   int height = 0;
@@ -155,52 +156,14 @@ int main()
   glewExperimental = GL_TRUE; 
   glewInit();
 
+  glEnable(GL_VERTEX_ARRAY);
+  glEnable(GL_DEPTH_TEST);
+  glDisable(GL_CULL_FACE);
+
   camera.eye = vec3(2,2,2);
   camera.at = vec3(0,0,0);
   camera.up = vec3(0,1,0);
   glClearColor(1,1,1,1);
-
-  // create quad
-  int i = 0;
-  verts[i++] = 0.0f;
-  verts[i++] = 0.0f;
-  verts[i++] = 0.0f;
-  verts[i++] = 1.0f;
-  verts[i++] = 0.0f;
-  verts[i++] = 0.0f;
-  verts[i++] = 1.0f;
-  verts[i++] = 0.0f;
-  verts[i++] = 1.0f;
-  verts[i++] = 0.0f;
-  verts[i++] = 0.0f;
-  verts[i++] = 1.0f;
-  i = 0;
-  faces[i++] = 0;
-  faces[i++] = 2;
-  faces[i++] = 1;
-  faces[i++] = 0;
-  faces[i++] = 3;
-  faces[i++] = 2;
-
-  glGenVertexArrays(1, &quad);
-  glBindVertexArray(quad);
-
-  GLuint ptr;
-  glGenBuffers(1, &ptr);
-  glBindBuffer(GL_ARRAY_BUFFER, ptr);
-  glBufferData(GL_ARRAY_BUFFER, VERTEX_ARRAY_SIZE * sizeof(float),
-          verts, GL_STATIC_DRAW);
-
-  glGenBuffers(1, &ptr);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ptr);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, NUM_FACES * sizeof(GLuint),
-          faces, GL_STATIC_DRAW);
-
-  glEnableVertexAttribArray(POSITION_LOC);
-  glVertexAttribPointer(POSITION_LOC, VERTEX_SIZE, GL_FLOAT, GL_FALSE,
-          VERTEX_SIZE * sizeof(float), 0);
-
-  world = scale(world, vec3(10,10,10));
 
   // load shaders
   shader_program = glCreateProgram();
@@ -227,9 +190,59 @@ int main()
   projection_location = glGetUniformLocation(shader_program, "projection");
   world_location = glGetUniformLocation(shader_program, "world");
 
+  // load geometry
+  int i = 0;
+  verts[i++] = -1.0f;
+  verts[i++] = 0.0f;
+  verts[i++] = -1.0f;
+
+  verts[i++] = 1.0f;
+  verts[i++] = 0.0f;
+  verts[i++] = -1.0f;
+
+  verts[i++] = 1.0f;
+  verts[i++] = 0.0f;
+  verts[i++] = 1.0f;
+
+  verts[i++] = -1.0f;
+  verts[i++] = 0.0f;
+  verts[i++] = 1.0f;
+
+  i = 0;
+  faces[i++] = 0;
+  faces[i++] = 2;
+  faces[i++] = 1;
+
+  faces[i++] = 0;
+  faces[i++] = 3;
+  faces[i++] = 2;
+
+  GLuint vptr, iptr;
+
+  glGenVertexArrays(1, &quad);
+  glBindVertexArray(quad);
+
+  glGenBuffers(1, &vptr);
+  glBindBuffer(GL_ARRAY_BUFFER, vptr);
+
+  glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(VERTEX_ARRAY_SIZE *
+    sizeof(GLfloat)), verts, GL_STATIC_DRAW);
+
+  glGenBuffers(1, &iptr);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iptr);
+
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)(INDEX_ARRAY_SIZE *
+    sizeof(GLuint)), faces, GL_STATIC_DRAW);
+
+  glEnableVertexAttribArray(POSITION_LOC);
+  glVertexAttribPointer(POSITION_LOC, VERTEX_SIZE, GL_FLOAT, GL_FALSE,
+          (GLsizei)(VERTEX_SIZE * sizeof(GLfloat)), 0);
+
+  // world = scale(world, vec3(10,10,10));
+
   glUniformMatrix4fv(world_location, 1, GL_FALSE, value_ptr(world));
 
-  glDisable(GL_CULL_FACE);
+  printf("Error? %d\n", glGetError());
 
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window))
@@ -237,13 +250,15 @@ int main()
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
     float ratio = (float) width / (float) height;
     mat4 view = lookAt(camera.eye, camera.at, camera.up);
     mat4 projection = perspective(fovy, ratio, near, far);
+
     glUniformMatrix4fv(view_location, 1, GL_FALSE, value_ptr(view));
     glUniformMatrix4fv(projection_location, 1, GL_FALSE, value_ptr(projection));
-    glBindVertexArray(quad);
-    glDrawElements(GL_TRIANGLES, (GLsizei)NUM_FACES, GL_UNSIGNED_INT, 0);
+
+    glDrawElements(GL_TRIANGLES, (GLsizei)INDEX_ARRAY_SIZE, GL_UNSIGNED_INT, 0);
 
     /* Swap front and back buffers */
     glfwSwapBuffers(window);
