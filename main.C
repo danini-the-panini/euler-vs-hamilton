@@ -2,22 +2,29 @@
 #include <cstdlib>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#define GLM_SWIZZLE 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <iostream>
 
+using glm::angleAxis;
+using glm::cross;
 using glm::detail::tmat4x4;
 using glm::detail::tquat;
 using glm::detail::tvec3;
+using glm::detail::tvec4;
 using glm::lookAt;
 using glm::mat4;
+using glm::normalize;
 using glm::perspective;
 using glm::rotate;
 using glm::scale;
+using glm::mat4_cast;
 using glm::value_ptr;
 using glm::vec3;
+using glm::vec4;
 using std::cerr;
 using std::cout;
 using std::endl;
@@ -64,25 +71,138 @@ void programLog(GLuint handle)
   }
 }
 
-template< typename T >
-struct Camera
+const float ROT_SCALE = 0.1f;
+const float ROLL_AMOUNT = 1.f;
+
+template <typename T>
+class Camera
 {
+public:
   tvec3<T> eye;
-  tvec3<T> at;
-  tvec3<T> up;
+  Camera()
+    : eye(vec3(2,2,2))
+  {}
+  virtual mat4 getView() const
+  {
+    tmat4x4<T> rot = getMat();
+    tvec3<T> up = (rot * tvec4<T>(0,1,0,0)).xyz();
+    tvec3<T> fwd = (rot * tvec4<T>(0,0,1,0)).xyz();
+    return lookAt((vec3)eye, (vec3)(eye+fwd), (vec3)up);
+  }
+  virtual void mouseLook(T,T) = 0;
+  virtual void doRoll(T) = 0;
+  void move(tvec3<T> t)
+  {
+    tmat4x4<T> rot = getMat();
+    tvec3<T> up = normalize((tvec3<T>)(rot * tvec4<T>(0,1,0,0)).xyz());
+    tvec3<T> fwd = normalize((tvec3<T>)(rot * tvec4<T>(0,0,1,0)).xyz());
+    tvec3<T> r = normalize(cross(fwd, up));
+    eye += r * t.x + up * t.y + fwd * t.z;
+  }
+  virtual tmat4x4<T> getMat() const = 0;
 };
 
-template< typename T >
-tmat4x4<T> euler_rotate(T angle, tvec3<T> axis)
+template <typename T>
+class EulerCamera : public Camera<T>
 {
-  return rotate(tmat4x4<T>(1.0), angle, normalize(axis));
+public:
+  T pitch, yaw, roll;
+  virtual void mouseLook(T dx, T dy)
+  {
+    yaw += dx * ROT_SCALE;
+    pitch += dy * ROT_SCALE;
+  }
+  virtual void doRoll(T dz)
+  {
+    roll += dz * ROLL_AMOUNT;
+  }
+  virtual tmat4x4<T> getMat() const
+  {
+    return rotate(rotate(rotate(tmat4x4<T>(1),
+      pitch, tvec3<T>(1,0,0)),
+      yaw, tvec3<T>(0,1,0)),
+      roll, tvec3<T>(0,0,1));
+  }
+};
+
+template <typename T>
+class QuatCamera : public Camera<T>
+{
+public:
+  tquat<T> quat;
+  virtual void mouseLook(T dx,T dy)
+  {
+    quat = quat * (angleAxis(dx * ROT_SCALE, tvec3<T>(0,1,0)) *
+      angleAxis(dy * ROT_SCALE, tvec3<T>(1,0,0)));
+  }
+  virtual void doRoll(T dz)
+  {
+    quat = quat * angleAxis(dz * ROLL_AMOUNT, tvec3<T>(0,0,1));
+  }
+  virtual tmat4x4<T> getMat() const
+  {
+    return mat4_cast(quat);
+  }
+};
+
+Camera<double>* cam =
+ // new EulerCamera<double>();
+ new QuatCamera<double>();
+
+double mx = -1, my = -1;
+
+void mouseMoved(GLFWwindow* window, double x, double y)
+{
+  if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
+  {
+    if (mx != -1 && my != -1)
+    {
+      double dx = x - mx;
+      double dy = y - my;
+
+      cam->mouseLook(dx,dy);
+    }
+
+    mx = x; my = y;
+  }
+  else mx = my = -1;
 }
 
-template< typename T >
-tmat4x4<T> quaternion_rotate(T angle, tvec3<T> axis)
+template <typename T>
+void doKeys(GLFWwindow* window)
 {
-  tquat<T> q = rotate(tquat<T>(1,0,0,0), angle, normalize(axis));
-  return mat4_cast(q);
+  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+      cam->move(tvec3<T>(0,0,1));
+    }
+    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+      cam->move(tvec3<T>(0,0,-1));
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+      cam->move(tvec3<T>(1,0,0));
+    }
+    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+      cam->move(tvec3<T>(-1,0,0));
+    }
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    {
+      cam->move(tvec3<T>(0,1,0));
+    }
+    else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+    {
+      cam->move(tvec3<T>(0,-1,0));
+    }
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+    {
+      cam->doRoll(1);
+    }
+    else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+    {
+      cam->doRoll(-1);
+    }
 }
 
 int main()
@@ -121,8 +241,6 @@ int main()
 
   GLFWwindow* window;
 
-  Camera<float> camera;
-
   GLuint quad = 0;
   GLfloat* verts = new GLfloat[VERTEX_ARRAY_SIZE];
   GLuint* faces = new GLuint[INDEX_ARRAY_SIZE];
@@ -156,13 +274,12 @@ int main()
   glewExperimental = GL_TRUE; 
   glewInit();
 
+  glfwSetCursorPosCallback(window, mouseMoved);
+
   glEnable(GL_VERTEX_ARRAY);
   glEnable(GL_DEPTH_TEST);
   glDisable(GL_CULL_FACE);
 
-  camera.eye = vec3(2,2,2);
-  camera.at = vec3(0,0,0);
-  camera.up = vec3(0,1,0);
   glClearColor(1,1,1,1);
 
   // load shaders
@@ -238,7 +355,7 @@ int main()
   glVertexAttribPointer(POSITION_LOC, VERTEX_SIZE, GL_FLOAT, GL_FALSE,
           (GLsizei)(VERTEX_SIZE * sizeof(GLfloat)), 0);
 
-  // world = scale(world, vec3(10,10,10));
+  world = scale(world, vec3(10,10,10));
 
   glUniformMatrix4fv(world_location, 1, GL_FALSE, value_ptr(world));
 
@@ -252,7 +369,7 @@ int main()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     float ratio = (float) width / (float) height;
-    mat4 view = lookAt(camera.eye, camera.at, camera.up);
+    mat4 view = cam->getView();
     mat4 projection = perspective(fovy, ratio, near, far);
 
     glUniformMatrix4fv(view_location, 1, GL_FALSE, value_ptr(view));
@@ -264,6 +381,8 @@ int main()
     glfwSwapBuffers(window);
     /* Poll for and process events */
     glfwPollEvents();
+
+    doKeys<double>(window);
   }
 
   glfwTerminate();
