@@ -84,20 +84,25 @@ public:
   {}
   virtual mat4 getView() const
   {
-    tmat4x4<T> rot = getMat();
-    tvec3<T> up = (rot * tvec4<T>(0,1,0,0)).xyz();
-    tvec3<T> fwd = (rot * tvec4<T>(0,0,1,0)).xyz();
+    tvec3<T> up, fwd, r;
+    cameraAxes(up, fwd, r);
     return lookAt((vec3)eye, (vec3)(eye+fwd), (vec3)up);
   }
   virtual void mouseLook(T,T) = 0;
   virtual void doRoll(T) = 0;
   void move(tvec3<T> t)
   {
-    tmat4x4<T> rot = getMat();
-    tvec3<T> up = normalize((tvec3<T>)(rot * tvec4<T>(0,1,0,0)).xyz());
-    tvec3<T> fwd = normalize((tvec3<T>)(rot * tvec4<T>(0,0,1,0)).xyz());
-    tvec3<T> r = normalize(cross(fwd, up));
+    tvec3<T> up, fwd, r;
+    cameraAxes(up, fwd, r);
     eye += r * t.x + up * t.y + fwd * t.z;
+  }
+  void cameraAxes(tvec3<T>& up_out, tvec3<T>& fwd_out,
+    tvec3<T>& r_out) const
+  {
+    tmat4x4<T> rot = getMat();
+    up_out = normalize((tvec3<T>)(rot * tvec4<T>(0,1,0,0)).xyz());
+    fwd_out = normalize((tvec3<T>)(rot * tvec4<T>(0,0,1,0)).xyz());
+    r_out = normalize((tvec3<T>)(rot * tvec4<T>(1,0,0,0)).xyz());
   }
   virtual tmat4x4<T> getMat() const = 0;
   void doKeys(GLFWwindow* window)
@@ -112,11 +117,11 @@ public:
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
-      move(tvec3<T>(-1,0,0));
+      move(tvec3<T>(1,0,0));
     }
     else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
-      move(tvec3<T>(1,0,0));
+      move(tvec3<T>(-1,0,0));
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
@@ -141,22 +146,19 @@ template <typename T>
 class EulerCamera : public Camera<T>
 {
 public:
-  T pitch, yaw, roll;
+  tmat4x4<T> rot;
+  EulerCamera() : rot(tmat4x4<T>(1)) {}
   virtual void mouseLook(T dx, T dy)
   {
-    yaw += dx * ROT_SCALE;
-    pitch += dy * ROT_SCALE;
+    rot = rotate(rotate(rot, dy, tvec3<T>(1,0,0)), -dx, tvec3<T>(0,1,0));
   }
   virtual void doRoll(T dz)
   {
-    roll += dz * ROLL_AMOUNT;
+    rot = rotate(rot, dz, tvec3<T>(0,0,1));
   }
   virtual tmat4x4<T> getMat() const
   {
-    return rotate(rotate(rotate(tmat4x4<T>(1),
-      pitch, tvec3<T>(1,0,0)),
-      yaw, tvec3<T>(0,1,0)),
-      roll, tvec3<T>(0,0,1));
+    return rot;
   }
 };
 
@@ -180,9 +182,8 @@ public:
   }
 };
 
-Camera<double>* cam =
- // new EulerCamera<double>();
- new QuatCamera<double>();
+Camera<float>* camf = NULL;
+Camera<double>* cam = NULL;
 
 double mx = -1, my = -1;
 
@@ -196,6 +197,7 @@ void mouseMoved(GLFWwindow* window, double x, double y)
       double dy = y - my;
 
       cam->mouseLook(dx,dy);
+      camf->mouseLook(dx,dy);
     }
 
     mx = x; my = y;
@@ -203,8 +205,24 @@ void mouseMoved(GLFWwindow* window, double x, double y)
   else mx = my = -1;
 }
 
-int main()
+int main(int argc, char ** argv)
 {
+  bool euler = true;
+  for (int i = 1; i < argc; i++)
+  {
+    if (strcmp(argv[i],"-q")==0 || strcmp(argv[i],"--quaternion")==0)
+      euler = false;
+    else if (strcmp(argv[i],"-e")==0 || strcmp(argv[i],"--euler")==0)
+      euler = true;
+    else printf("Unknown switch: %s\n", argv[i]);
+  }
+
+  camf = euler
+    ? (Camera<float>*)  new EulerCamera<float>()
+    : (Camera<float>*)  new QuatCamera<float>();
+  cam  = euler
+    ? (Camera<double>*) new EulerCamera<double>()
+    : (Camera<double>*) new QuatCamera<double>();
 
   const float fovy = 45.f;
   const float near = 1.f;
@@ -393,6 +411,7 @@ int main()
     glfwPollEvents();
 
     cam->doKeys(window);
+    camf->doKeys(window);
   }
 
   glfwTerminate();
