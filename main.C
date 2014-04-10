@@ -116,8 +116,8 @@ const char *fragment_glsl =
     "colour = vec4(ip,ip,ip,1);"
   "}";
 
-const float ROT_SCALE = 0.1f;
-const float ROLL_AMOUNT = 1.f;
+const float ROT_SCALE = 0.2f;
+const float ROLL_AMOUNT = 2.f;
 
 GLFWwindow* window;
 
@@ -213,11 +213,12 @@ public:
   EulerCamera() : rot(tmat4x4<T>(1)) {}
   virtual void mouseLook(T dx, T dy)
   {
-    rot = rotate(rotate(rot, dy, tvec3<T>(1,0,0)), -dx, tvec3<T>(0,1,0));
+    rot = rotate(rotate(rot, dy * ROT_SCALE, tvec3<T>(1,0,0)),
+      -dx * ROT_SCALE, tvec3<T>(0,1,0));
   }
   virtual void doRoll(T dz)
   {
-    rot = rotate(rot, dz, tvec3<T>(0,0,1));
+    rot = rotate(rot, dz * ROLL_AMOUNT, tvec3<T>(0,0,1));
   }
   virtual tmat4x4<T> getMat() const
   {
