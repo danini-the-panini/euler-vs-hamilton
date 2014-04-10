@@ -100,6 +100,41 @@ public:
     eye += r * t.x + up * t.y + fwd * t.z;
   }
   virtual tmat4x4<T> getMat() const = 0;
+  void doKeys(GLFWwindow* window)
+  {
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+      move(tvec3<T>(0,0,1));
+    }
+    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+      move(tvec3<T>(0,0,-1));
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+      move(tvec3<T>(-1,0,0));
+    }
+    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+      move(tvec3<T>(1,0,0));
+    }
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    {
+      move(tvec3<T>(0,1,0));
+    }
+    else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+    {
+      move(tvec3<T>(0,-1,0));
+    }
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+    {
+      doRoll(-1);
+    }
+    else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+    {
+      doRoll(1);
+    }
+  }
 };
 
 template <typename T>
@@ -132,7 +167,7 @@ public:
   tquat<T> quat;
   virtual void mouseLook(T dx,T dy)
   {
-    quat = quat * (angleAxis(dx * ROT_SCALE, tvec3<T>(0,1,0)) *
+    quat = quat * (angleAxis(-dx * ROT_SCALE, tvec3<T>(0,1,0)) *
       angleAxis(dy * ROT_SCALE, tvec3<T>(1,0,0)));
   }
   virtual void doRoll(T dz)
@@ -166,43 +201,6 @@ void mouseMoved(GLFWwindow* window, double x, double y)
     mx = x; my = y;
   }
   else mx = my = -1;
-}
-
-template <typename T>
-void doKeys(GLFWwindow* window)
-{
-  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    {
-      cam->move(tvec3<T>(0,0,1));
-    }
-    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-      cam->move(tvec3<T>(0,0,-1));
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    {
-      cam->move(tvec3<T>(1,0,0));
-    }
-    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    {
-      cam->move(tvec3<T>(-1,0,0));
-    }
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-    {
-      cam->move(tvec3<T>(0,1,0));
-    }
-    else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-    {
-      cam->move(tvec3<T>(0,-1,0));
-    }
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-    {
-      cam->doRoll(1);
-    }
-    else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-    {
-      cam->doRoll(-1);
-    }
 }
 
 int main()
@@ -382,7 +380,7 @@ int main()
     /* Poll for and process events */
     glfwPollEvents();
 
-    doKeys<double>(window);
+    cam->doKeys(window);
   }
 
   glfwTerminate();
