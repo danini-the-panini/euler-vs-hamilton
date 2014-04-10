@@ -4,12 +4,14 @@
 #include <GLFW/glfw3.h>
 #define GLM_SWIZZLE 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_access.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <iostream>
 
 using glm::angleAxis;
+using glm::column;
 using glm::cross;
 using glm::detail::tmat4x4;
 using glm::detail::tquat;
@@ -290,6 +292,23 @@ void drawQuarter(int top, int left, int width, int height, Camera<T>* cam)
   cam->doKeys(window);
 }
 
+double getDifference(Camera<float>* camf, Camera<double>* camd)
+{
+  tmat4x4<double> matf = (tmat4x4<double>) camf->getMat();
+  tmat4x4<double> matd = camd->getMat();
+
+  double diff = 0;
+
+  for (int i = 0; i < 4; i++)
+  {
+    tvec4<double> v = column(matf, i) - column(matd, i);
+
+    diff += (v.x * v.x + v.y * v.y + v.z * v.z + v.w * v.w);
+  }
+
+  return diff/16.0;
+}
+
 int main(/*int argc, char ** argv*/)
 {
   /* Initialize the library */
@@ -395,7 +414,7 @@ int main(/*int argc, char ** argv*/)
 
   glUniformMatrix4fv(world_location, 1, GL_FALSE, value_ptr(world));
 
-  printf("Error? %d\n", glGetError());
+  cout << ("Euler, Quaternion") << endl;
 
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window))
@@ -407,6 +426,12 @@ int main(/*int argc, char ** argv*/)
     drawQuarter(width/2, 0, width/2, height/2, ecamd);
     drawQuarter(0, height/2, width/2, height/2, qcamf);
     drawQuarter(width/2, height/2, width/2, height/2, qcamd);
+
+    double ediff = getDifference(ecamf, ecamd);
+    double qdiff = getDifference(qcamf, qcamd);
+
+    cout.precision(15);
+    cout << std::fixed << ediff << ", " << qdiff << endl;
 
     /* Swap front and back buffers */
     glfwSwapBuffers(window);
