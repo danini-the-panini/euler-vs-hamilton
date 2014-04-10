@@ -234,10 +234,12 @@ public:
   {
     quat = quat * (angleAxis(-dx * ROT_SCALE, tvec3<T>(0,1,0)) *
       angleAxis(dy * ROT_SCALE, tvec3<T>(1,0,0)));
+    quat = normalize(quat);
   }
   virtual void doRoll(T dz)
   {
     quat = quat * angleAxis(dz * ROLL_AMOUNT, tvec3<T>(0,0,1));
+    quat = normalize(quat);
   }
   virtual tmat4x4<T> getMat() const
   {
