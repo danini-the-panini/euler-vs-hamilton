@@ -1,4 +1,4 @@
-CC=clang++
+CC=g++
 
 LIBS=glew glfw3
 LIB_CFLAGS=$(foreach lib,${LIBS},$(shell pkg-config --cflags $(lib)))
