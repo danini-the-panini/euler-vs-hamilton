@@ -9,7 +9,7 @@
 \usepackage{pgfplots}
 \usepackage{pgfplotstable}
 
-\title{Comparing Numeric Stability of using Euler angles and Quaternions for Performing Rotation}
+\title{Comparing Numeric Stability of Euler angles and Quaternions when Performing Rotations}
 
 \author{Daniel Smith (11306026)}
 
@@ -67,14 +67,14 @@ The results were collected over a few minutes and are shown in the graph below.
         x expr=\coordindex,
         y expr=\thisrowno{0}*100
       ] {results_quat.dat};
-      \legend{Euler,Quaternions};
+      \legend{Euler angles,Quaternions};
     \end{axis}
   \end{tikzpicture}
 \end{center}
 
 \section{Conclusion}
 
-As can be clearly seen from the results, the amount of accumulated error over time when using Euler angles is huge compared to that of quaternions. In fact, it appears as if quaternions exhibit almost no numeric instability. While I cannot say for sure, it would appear that rounding errors add up exponentially. If that is the case, and this is recorded from only a few minutes, imagine the error that would accumulate over the period of a few hours, or even days.
+As can be seen from the results, the amount of accumulated error over time when using Euler angles is huge compared to that of quaternions. In fact, it appears as if quaternions exhibit almost no numeric instability. While I cannot say for sure, it would appear that rounding errors add up exponentially. If that is the case, and this is recorded from only a few minutes, imagine the error that would accumulate over the period of a few hours, or even days.
 
 The solid conclusion is that Euler angles exhibit notably more numeric instability than quaternions do.
 
