@@ -319,6 +319,14 @@ int main(/*int argc, char ** argv*/)
   if (!glfwInit())
       return -1;
 
+// Because Apple refuses to keep up with standards!
+#ifdef __APPLE__
+  glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 2);
+  glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+
   /* Create a windowed mode window and its OpenGL context */
   window = glfwCreateWindow(640, 480, "Euler vs Hamilton", NULL, NULL);
   if (!window)
