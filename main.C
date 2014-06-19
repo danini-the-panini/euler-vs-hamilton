@@ -33,6 +33,21 @@ void initGlew()
   glewInit();
 }
 
+void init()
+{
+  initGlfw();
+  initWindow();
+  initGlew();
+
+  glfwSetCursorPosCallback(window, mouseMoved);
+
+  glEnable(GL_VERTEX_ARRAY);
+  glEnable(GL_DEPTH_TEST);
+  glDisable(GL_CULL_FACE);
+
+  glClearColor(1,1,1,1);
+}
+
 void loadShaders()
 {
   shader_program = glCreateProgram();
@@ -171,18 +186,7 @@ double getDifference(Camera<float>* camf, Camera<double>* camd)
 
 int main(/*int argc, char ** argv*/)
 {
-
-  initGlfw();
-  initWindow();
-  initGlew();
-
-  glfwSetCursorPosCallback(window, mouseMoved);
-
-  glEnable(GL_VERTEX_ARRAY);
-  glEnable(GL_DEPTH_TEST);
-  glDisable(GL_CULL_FACE);
-
-  glClearColor(1,1,1,1);
+  init();
 
   loadShaders();
 
