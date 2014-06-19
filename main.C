@@ -14,6 +14,19 @@ void initGlfw()
 #endif
 }
 
+void initWindow()
+{
+  window = glfwCreateWindow(640, 480, "Euler vs Hamilton", NULL, NULL);
+  if (!window)
+  {
+      glfwTerminate();
+      exit(-1);
+  }
+
+  /* Make the window's context current */
+  glfwMakeContextCurrent(window);
+}
+
 void loadShaders()
 {
   shader_program = glCreateProgram();
@@ -154,17 +167,7 @@ int main(/*int argc, char ** argv*/)
 {
 
   initGlfw();
-
-  /* Create a windowed mode window and its OpenGL context */
-  window = glfwCreateWindow(640, 480, "Euler vs Hamilton", NULL, NULL);
-  if (!window)
-  {
-      glfwTerminate();
-      return -1;
-  }
-
-  /* Make the window's context current */
-  glfwMakeContextCurrent(window);
+  initWindow();
 
   glewExperimental = GL_TRUE;
   glewInit();
