@@ -10,8 +10,17 @@ CFLAGS= ${WARNING_FLAGS} ${FORMATTING_FLAGS} ${LIB_CFLAGS} -g -std=c++1y -pipe
 
 LDFLAGS=-g
 
-
 all: main
 
-main: main.C
-	${CC} $^ ${LDFLAGS} -o main ${LDLIBS}
+main: shader.o main.o
+	${CC} $^ ${LDFLAGS} -o $@ ${LDLIBS}
+
+%.o:
+	${CC}  ${CFLAGS} -c $< -o $@
+
+main.o: main.C main.h shader.h camera.h include.h
+shader.o: shader.C shader.h include.h
+
+clean:
+	rm -rf *.o main
+

@@ -1,48 +1,5 @@
 #include "main.h"
 
-
-// Just some helper functions for checking shaders...
-void shaderLog(GLuint handle)
-{
-  int status;
-  glGetShaderiv(handle, GL_COMPILE_STATUS, &status);
-  if (status == GL_FALSE)
-  {
-     /* Get the length of the info log. */
-     int len;
-     glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &len);
-     /* Get the info log. */
-     char* log = new char[len];
-     glGetShaderInfoLog(handle, len, &len, log);
-     /* Print error */
-     cerr << "Compilation error: " << log << endl;
-     /* Finally, free the memory allocated. */
-     delete log;
-     /* Exit the program. */
-     exit(-1);
-  }
-}
-void programLog(GLuint handle)
-{
-  int status;
-  glGetProgramiv(handle, GL_LINK_STATUS, &status);
-  if (status == GL_FALSE)
-  {
-     /* Get the length of the info log. */
-     int len;
-     glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &len);
-     /* Get the info log. */
-     char* log = new char[len];
-     glGetProgramInfoLog(handle, len, &len, log);
-     /* Print error */
-     cerr << "Link error: " << log << endl;
-     /* Finally, free the memory allocated. */
-     delete log;
-     /* Exit the program. */
-     exit(-1);
-  }
-}
-
 void mouseMoved(GLFWwindow* window, double x, double y)
 {
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
