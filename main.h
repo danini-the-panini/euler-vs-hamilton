@@ -47,6 +47,8 @@ void mouseMoved(GLFWwindow* window, double x, double y);
 
 double getDifference(Camera<float>* camf, Camera<double>* camd);
 
-void loadShaders()
+void loadShaders();
+
+void loadGeometry();
 
 #endif

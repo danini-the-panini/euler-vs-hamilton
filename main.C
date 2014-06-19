@@ -27,6 +27,60 @@ void loadShaders()
   world_location = glGetUniformLocation(shader_program, "world");
 }
 
+void loadGeometry()
+{
+  int i = 0;
+  verts[i++] = -1.0f;
+  verts[i++] = 0.0f;
+  verts[i++] = -1.0f;
+
+  verts[i++] = 1.0f;
+  verts[i++] = 0.0f;
+  verts[i++] = -1.0f;
+
+  verts[i++] = 1.0f;
+  verts[i++] = 0.0f;
+  verts[i++] = 1.0f;
+
+  verts[i++] = -1.0f;
+  verts[i++] = 0.0f;
+  verts[i++] = 1.0f;
+
+  i = 0;
+  faces[i++] = 0;
+  faces[i++] = 2;
+  faces[i++] = 1;
+
+  faces[i++] = 0;
+  faces[i++] = 3;
+  faces[i++] = 2;
+
+  GLuint vptr, iptr;
+
+  glGenVertexArrays(1, &quad);
+  glBindVertexArray(quad);
+
+  glGenBuffers(1, &vptr);
+  glBindBuffer(GL_ARRAY_BUFFER, vptr);
+
+  glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(VERTEX_ARRAY_SIZE *
+    sizeof(GLfloat)), verts, GL_STATIC_DRAW);
+
+  glGenBuffers(1, &iptr);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iptr);
+
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)(INDEX_ARRAY_SIZE *
+    sizeof(GLuint)), faces, GL_STATIC_DRAW);
+
+  glEnableVertexAttribArray(POSITION_LOC);
+  glVertexAttribPointer(POSITION_LOC, VERTEX_SIZE, GL_FLOAT, GL_FALSE,
+          (GLsizei)(VERTEX_SIZE * sizeof(GLfloat)), 0);
+
+  world = scale(world, vec3(10,10,10));
+
+  glUniformMatrix4fv(world_location, 1, GL_FALSE, value_ptr(world));
+}
+
 void mouseMoved(GLFWwindow* window, double x, double y)
 {
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
@@ -121,56 +175,7 @@ int main(/*int argc, char ** argv*/)
   loadShaders();
 
   // load geometry
-  int i = 0;
-  verts[i++] = -1.0f;
-  verts[i++] = 0.0f;
-  verts[i++] = -1.0f;
-
-  verts[i++] = 1.0f;
-  verts[i++] = 0.0f;
-  verts[i++] = -1.0f;
-
-  verts[i++] = 1.0f;
-  verts[i++] = 0.0f;
-  verts[i++] = 1.0f;
-
-  verts[i++] = -1.0f;
-  verts[i++] = 0.0f;
-  verts[i++] = 1.0f;
-
-  i = 0;
-  faces[i++] = 0;
-  faces[i++] = 2;
-  faces[i++] = 1;
-
-  faces[i++] = 0;
-  faces[i++] = 3;
-  faces[i++] = 2;
-
-  GLuint vptr, iptr;
-
-  glGenVertexArrays(1, &quad);
-  glBindVertexArray(quad);
-
-  glGenBuffers(1, &vptr);
-  glBindBuffer(GL_ARRAY_BUFFER, vptr);
-
-  glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(VERTEX_ARRAY_SIZE *
-    sizeof(GLfloat)), verts, GL_STATIC_DRAW);
-
-  glGenBuffers(1, &iptr);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iptr);
-
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)(INDEX_ARRAY_SIZE *
-    sizeof(GLuint)), faces, GL_STATIC_DRAW);
-
-  glEnableVertexAttribArray(POSITION_LOC);
-  glVertexAttribPointer(POSITION_LOC, VERTEX_SIZE, GL_FLOAT, GL_FALSE,
-          (GLsizei)(VERTEX_SIZE * sizeof(GLfloat)), 0);
-
-  world = scale(world, vec3(10,10,10));
-
-  glUniformMatrix4fv(world_location, 1, GL_FALSE, value_ptr(world));
+  loadGeometry();
 
   cout << ("Euler, Quaternion") << endl;
 

@@ -10,6 +10,7 @@ CFLAGS= ${WARNING_FLAGS} ${FORMATTING_FLAGS} ${LIB_CFLAGS} -g -std=c++1y -pipe
 
 LDFLAGS=-g
 
+.PHONY : all
 all: main
 
 main: shader.o main.o
@@ -21,6 +22,7 @@ main: shader.o main.o
 main.o: main.C main.h shader.h camera.h include.h
 shader.o: shader.C shader.h include.h
 
+.PHONY : clean
 clean:
 	rm -rf *.o main
 
