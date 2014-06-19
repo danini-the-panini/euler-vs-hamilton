@@ -1,5 +1,32 @@
 #include "main.h"
 
+void loadShaders()
+{
+  shader_program = glCreateProgram();
+
+  GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(vertex_shader, 1, &vertex_glsl, NULL);
+  glCompileShader(vertex_shader);
+  shaderLog(vertex_shader);
+
+  GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(fragment_shader, 1, &fragment_glsl, NULL);
+  glCompileShader(fragment_shader);
+  shaderLog(fragment_shader);
+
+  glAttachShader(shader_program, vertex_shader);
+  glAttachShader(shader_program, fragment_shader);
+
+  glLinkProgram(shader_program);
+  programLog(shader_program);
+
+  glUseProgram(shader_program);
+
+  view_location = glGetUniformLocation(shader_program, "view");
+  projection_location = glGetUniformLocation(shader_program, "projection");
+  world_location = glGetUniformLocation(shader_program, "world");
+}
+
 void mouseMoved(GLFWwindow* window, double x, double y)
 {
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
@@ -91,30 +118,7 @@ int main(/*int argc, char ** argv*/)
 
   glClearColor(1,1,1,1);
 
-  // load shaders
-  shader_program = glCreateProgram();
-
-  GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertex_shader, 1, &vertex_glsl, NULL);
-  glCompileShader(vertex_shader);
-  shaderLog(vertex_shader);
-
-  GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragment_shader, 1, &fragment_glsl, NULL);
-  glCompileShader(fragment_shader);
-  shaderLog(fragment_shader);
-
-  glAttachShader(shader_program, vertex_shader);
-  glAttachShader(shader_program, fragment_shader);
-
-  glLinkProgram(shader_program);
-  programLog(shader_program);
-
-  glUseProgram(shader_program);
-
-  view_location = glGetUniformLocation(shader_program, "view");
-  projection_location = glGetUniformLocation(shader_program, "projection");
-  world_location = glGetUniformLocation(shader_program, "world");
+  loadShaders();
 
   // load geometry
   int i = 0;
