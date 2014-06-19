@@ -1,6 +1,5 @@
 #include "main.h"
 
-#include "camera.h"
 
 // Just some helper functions for checking shaders...
 void shaderLog(GLuint handle)

@@ -1,7 +1,10 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "main.h"
+#include "include.h"
+
+const float ROT_SCALE = 0.2f;
+const float ROLL_AMOUNT = 2.f;
 
 template <typename T>
 class Camera
