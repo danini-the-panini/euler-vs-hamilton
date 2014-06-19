@@ -27,6 +27,12 @@ void initWindow()
   glfwMakeContextCurrent(window);
 }
 
+void initGlew()
+{
+  glewExperimental = GL_TRUE;
+  glewInit();
+}
+
 void loadShaders()
 {
   shader_program = glCreateProgram();
@@ -168,9 +174,7 @@ int main(/*int argc, char ** argv*/)
 
   initGlfw();
   initWindow();
-
-  glewExperimental = GL_TRUE;
-  glewInit();
+  initGlew();
 
   glfwSetCursorPosCallback(window, mouseMoved);
 

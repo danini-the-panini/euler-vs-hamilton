@@ -49,6 +49,7 @@ double getDifference(Camera<float>* camf, Camera<double>* camd);
 
 void initGlfw();
 void initWindow();
+void initGlew();
 
 void loadShaders();
 void loadGeometry();
