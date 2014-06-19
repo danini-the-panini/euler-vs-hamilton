@@ -1,5 +1,32 @@
 #include "main.h"
 
+void mainLoop()
+{
+  glfwGetFramebufferSize(window, &width, &height);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  // top-left: Euler Camera (float)
+  drawQuarter(0, 0, width/2, height/2, ecamf);
+  // top-right: Euler Camera (double)
+  drawQuarter(width/2, 0, width/2, height/2, ecamd);
+
+  // bottom-left: Quaternion Camera (float)
+  drawQuarter(0, height/2, width/2, height/2, qcamf);
+  // bottom-right: Quaternion Camera (double)
+  drawQuarter(width/2, height/2, width/2, height/2, qcamd);
+
+  double ediff = getDifference(ecamf, ecamd);
+  double qdiff = getDifference(qcamf, qcamd);
+
+  cout.precision(15);
+  cout << std::fixed << ediff << ", " << qdiff << endl;
+
+  /* Swap front and back buffers */
+  glfwSwapBuffers(window);
+  /* Poll for and process events */
+  glfwPollEvents();
+}
+
 void initGlfw()
 {
   if (!glfwInit())
@@ -12,6 +39,21 @@ void initGlfw()
   glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
+}
+
+void init()
+{
+  initGlfw();
+  initWindow();
+  initGlew();
+
+  glfwSetCursorPosCallback(window, mouseMoved);
+
+  glEnable(GL_VERTEX_ARRAY);
+  glEnable(GL_DEPTH_TEST);
+  glDisable(GL_CULL_FACE);
+
+  glClearColor(1,1,1,1);
 }
 
 void initWindow()
@@ -31,21 +73,6 @@ void initGlew()
 {
   glewExperimental = GL_TRUE;
   glewInit();
-}
-
-void init()
-{
-  initGlfw();
-  initWindow();
-  initGlew();
-
-  glfwSetCursorPosCallback(window, mouseMoved);
-
-  glEnable(GL_VERTEX_ARRAY);
-  glEnable(GL_DEPTH_TEST);
-  glDisable(GL_CULL_FACE);
-
-  glClearColor(1,1,1,1);
 }
 
 void loadShaders()
@@ -150,23 +177,6 @@ void mouseMoved(GLFWwindow* window, double x, double y)
   else mx = my = -1;
 }
 
-template <typename T>
-void drawQuarter(int top, int left, int width, int height, Camera<T>* cam)
-{
-  glViewport(top, left, width, height);
-
-  float ratio = (float) width / (float) height;
-  mat4 view = cam->getView();
-  mat4 projection = perspective(fovy, ratio, near, far);
-
-  glUniformMatrix4fv(view_location, 1, GL_FALSE, value_ptr(view));
-  glUniformMatrix4fv(projection_location, 1, GL_FALSE, value_ptr(projection));
-
-  glDrawElements(GL_TRIANGLES, (GLsizei)INDEX_ARRAY_SIZE, GL_UNSIGNED_INT, 0);
-
-  cam->doKeys(window);
-}
-
 double getDifference(Camera<float>* camf, Camera<double>* camd)
 {
   tmat4x4<double,highp> matf = (tmat4x4<double,highp>) camf->getMat();
@@ -197,29 +207,7 @@ int main(/*int argc, char ** argv*/)
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window))
   {
-    glfwGetFramebufferSize(window, &width, &height);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // top-left: Euler Camera (float)
-    drawQuarter(0, 0, width/2, height/2, ecamf);
-    // top-right: Euler Camera (double)
-    drawQuarter(width/2, 0, width/2, height/2, ecamd);
-
-    // bottom-left: Quaternion Camera (float)
-    drawQuarter(0, height/2, width/2, height/2, qcamf);
-    // bottom-right: Quaternion Camera (double)
-    drawQuarter(width/2, height/2, width/2, height/2, qcamd);
-
-    double ediff = getDifference(ecamf, ecamd);
-    double qdiff = getDifference(qcamf, qcamd);
-
-    cout.precision(15);
-    cout << std::fixed << ediff << ", " << qdiff << endl;
-
-    /* Swap front and back buffers */
-    glfwSwapBuffers(window);
-    /* Poll for and process events */
-    glfwPollEvents();
+    mainLoop();
   }
 
   glfwTerminate();
