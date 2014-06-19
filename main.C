@@ -426,9 +426,14 @@ int main(/*int argc, char ** argv*/)
     glfwGetFramebufferSize(window, &width, &height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // top-left: Euler Camera (float)
     drawQuarter(0, 0, width/2, height/2, ecamf);
+    // top-right: Euler Camera (double)
     drawQuarter(width/2, 0, width/2, height/2, ecamd);
+
+    // bottom-left: Quaternion Camera (float)
     drawQuarter(0, height/2, width/2, height/2, qcamf);
+    // bottom-right: Quaternion Camera (double)
     drawQuarter(width/2, height/2, width/2, height/2, qcamd);
 
     double ediff = getDifference(ecamf, ecamd);
