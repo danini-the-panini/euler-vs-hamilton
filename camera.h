@@ -87,22 +87,23 @@ public:
   typedef tvec4<T,P> vec4_type;
   typedef tmat4x4<T,P> mat4_type;
 
-  mat4_type rot;
   EulerCamera(vec3_type eye = vec3_type(0,0,0))
-    : Camera<T,P>(eye), rot(mat4_type(1)) {}
+    : Camera<T,P>(eye), _rot(mat4_type(1)) {}
   virtual void mouseLook(T dx, T dy)
   {
-    rot = rotate(rotate(rot, dy * ROT_SCALE, vec3_type(1,0,0)),
+    _rot = rotate(rotate(_rot, dy * ROT_SCALE, vec3_type(1,0,0)),
       -dx * ROT_SCALE, vec3_type(0,1,0));
   }
   virtual void doRoll(T dz)
   {
-    rot = rotate(rot, dz * ROLL_AMOUNT, vec3_type(0,0,1));
+    _rot = rotate(_rot, dz * ROLL_AMOUNT, vec3_type(0,0,1));
   }
   virtual mat4_type getMat() const
   {
-    return rot;
+    return _rot;
   }
+private:
+  mat4_type _rot;
 };
 
 template <typename T, precision P = highp>
@@ -113,24 +114,25 @@ public:
   typedef tvec4<T,P> vec4_type;
   typedef tmat4x4<T,P> mat4_type;
 
-  tquat<T,P> quat;
   QuatCamera(vec3_type eye = vec3_type(0,0,0))
     : Camera<T,P>(eye) {}
   virtual void mouseLook(T dx,T dy)
   {
-    quat = quat * (angleAxis(-dx * ROT_SCALE, vec3_type(0,1,0)) *
+    _quat = _quat * (angleAxis(-dx * ROT_SCALE, vec3_type(0,1,0)) *
       angleAxis(dy * ROT_SCALE, vec3_type(1,0,0)));
-    quat = normalize(quat);
+    _quat = normalize(_quat);
   }
   virtual void doRoll(T dz)
   {
-    quat = quat * angleAxis(dz * ROLL_AMOUNT, vec3_type(0,0,1));
-    quat = normalize(quat);
+    _quat = _quat * angleAxis(dz * ROLL_AMOUNT, vec3_type(0,0,1));
+    _quat = normalize(_quat);
   }
   virtual mat4_type getMat() const
   {
-    return mat4_cast(quat);
+    return mat4_cast(_quat);
   }
+private:
+  tquat<T,P> _quat;
 };
 
 #endif
