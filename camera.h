@@ -6,62 +6,66 @@
 const float ROT_SCALE = 0.2f;
 const float ROLL_AMOUNT = 2.f;
 
-template <typename T>
+template <typename T, precision P = highp>
 class Camera
 {
 public:
-  tvec3<T,highp> eye;
+  typedef tvec3<T,P> vec3_type;
+  typedef tvec4<T,P> vec4_type;
+  typedef tmat4x4<T,P> mat4_type;
+
+  vec3_type eye;
   Camera()
     : eye(vec3(2,2,2))
   {}
   virtual mat4 getView() const
   {
-    tvec3<T,highp> up, fwd, r;
+    vec3_type up, fwd, r;
     cameraAxes(up, fwd, r);
     return lookAt((vec3)eye, (vec3)(eye+fwd), (vec3)up);
   }
   virtual void mouseLook(T,T) = 0;
   virtual void doRoll(T) = 0;
-  void move(tvec3<T,highp> t)
+  void move(vec3_type t)
   {
-    tvec3<T,highp> up, fwd, r;
+    vec3_type up, fwd, r;
     cameraAxes(up, fwd, r);
     eye += r * t.x + up * t.y + fwd * t.z;
   }
-  void cameraAxes(tvec3<T,highp>& up_out, tvec3<T,highp>& fwd_out,
-    tvec3<T,highp>& r_out) const
+  void cameraAxes(vec3_type& up_out, vec3_type& fwd_out,
+    vec3_type& r_out) const
   {
-    tmat4x4<T,highp> rot = getMat();
-    up_out = normalize((tvec3<T,highp>)(rot * tvec4<T,highp>(0,1,0,0)).xyz());
-    fwd_out = normalize((tvec3<T,highp>)(rot * tvec4<T,highp>(0,0,1,0)).xyz());
-    r_out = normalize((tvec3<T,highp>)(rot * tvec4<T,highp>(1,0,0,0)).xyz());
+    mat4_type rot = getMat();
+    up_out = normalize((vec3_type)(rot * vec4_type(0,1,0,0)).xyz());
+    fwd_out = normalize((vec3_type)(rot * vec4_type(0,0,1,0)).xyz());
+    r_out = normalize((vec3_type)(rot * vec4_type(1,0,0,0)).xyz());
   }
-  virtual tmat4x4<T,highp> getMat() const = 0;
+  virtual mat4_type getMat() const = 0;
   void doKeys(GLFWwindow* window)
   {
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
-      move(tvec3<T,highp>(0,0,1));
+      move(vec3_type(0,0,1));
     }
     else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
-      move(tvec3<T,highp>(0,0,-1));
+      move(vec3_type(0,0,-1));
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
-      move(tvec3<T,highp>(1,0,0));
+      move(vec3_type(1,0,0));
     }
     else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
-      move(tvec3<T,highp>(-1,0,0));
+      move(vec3_type(-1,0,0));
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
-      move(tvec3<T,highp>(0,1,0));
+      move(vec3_type(0,1,0));
     }
     else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
     {
-      move(tvec3<T,highp>(0,-1,0));
+      move(vec3_type(0,-1,0));
     }
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
     {
@@ -74,44 +78,52 @@ public:
   }
 };
 
-template <typename T>
-class EulerCamera : public Camera<T>
+template <typename T, precision P = highp>
+class EulerCamera : public Camera<T,P>
 {
 public:
-  tmat4x4<T,highp> rot;
-  EulerCamera() : rot(tmat4x4<T,highp>(1)) {}
+  typedef tvec3<T,P> vec3_type;
+  typedef tvec4<T,P> vec4_type;
+  typedef tmat4x4<T,P> mat4_type;
+
+  mat4_type rot;
+  EulerCamera() : rot(mat4_type(1)) {}
   virtual void mouseLook(T dx, T dy)
   {
-    rot = rotate(rotate(rot, dy * ROT_SCALE, tvec3<T,highp>(1,0,0)),
-      -dx * ROT_SCALE, tvec3<T,highp>(0,1,0));
+    rot = rotate(rotate(rot, dy * ROT_SCALE, vec3_type(1,0,0)),
+      -dx * ROT_SCALE, vec3_type(0,1,0));
   }
   virtual void doRoll(T dz)
   {
-    rot = rotate(rot, dz * ROLL_AMOUNT, tvec3<T,highp>(0,0,1));
+    rot = rotate(rot, dz * ROLL_AMOUNT, vec3_type(0,0,1));
   }
-  virtual tmat4x4<T,highp> getMat() const
+  virtual mat4_type getMat() const
   {
     return rot;
   }
 };
 
-template <typename T>
-class QuatCamera : public Camera<T>
+template <typename T, precision P = highp>
+class QuatCamera : public Camera<T,P>
 {
 public:
-  tquat<T,highp> quat;
+  typedef tvec3<T,P> vec3_type;
+  typedef tvec4<T,P> vec4_type;
+  typedef tmat4x4<T,P> mat4_type;
+
+  tquat<T,P> quat;
   virtual void mouseLook(T dx,T dy)
   {
-    quat = quat * (angleAxis(-dx * ROT_SCALE, tvec3<T,highp>(0,1,0)) *
-      angleAxis(dy * ROT_SCALE, tvec3<T,highp>(1,0,0)));
+    quat = quat * (angleAxis(-dx * ROT_SCALE, vec3_type(0,1,0)) *
+      angleAxis(dy * ROT_SCALE, vec3_type(1,0,0)));
     quat = normalize(quat);
   }
   virtual void doRoll(T dz)
   {
-    quat = quat * angleAxis(dz * ROLL_AMOUNT, tvec3<T,highp>(0,0,1));
+    quat = quat * angleAxis(dz * ROLL_AMOUNT, vec3_type(0,0,1));
     quat = normalize(quat);
   }
-  virtual tmat4x4<T,highp> getMat() const
+  virtual mat4_type getMat() const
   {
     return mat4_cast(quat);
   }

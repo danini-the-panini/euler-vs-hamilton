@@ -25,6 +25,7 @@ using glm::lookAt;
 using glm::mat4;
 using glm::normalize;
 using glm::perspective;
+using glm::precision;
 using glm::rotate;
 using glm::scale;
 using glm::mat4_cast;
