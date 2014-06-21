@@ -20,6 +20,7 @@ using glm::detail::tmat4x4;
 using glm::detail::tquat;
 using glm::detail::tvec3;
 using glm::detail::tvec4;
+using glm::dot;
 using glm::highp;
 using glm::lookAt;
 using glm::mat4;

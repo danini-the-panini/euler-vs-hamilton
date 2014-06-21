@@ -21,7 +21,13 @@ public:
   {
     vec3_type up, fwd, r;
     cameraAxes(up, fwd, r);
-    return lookAt((vec3)_eye, (vec3)(_eye+fwd), (vec3)up);
+
+    return mat4(
+      r.x, up.x, -fwd.x, .0f,
+      r.y, up.y, -fwd.y, .0f,
+      r.z, up.z, -fwd.z, .0f,
+      -dot(r, _eye), -dot(up, _eye), dot(fwd, _eye), 1.f
+    );
   }
   virtual void mouseLook(T,T) = 0;
   virtual void doRoll(T) = 0;
@@ -52,11 +58,11 @@ public:
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
-      move(vec3_type(1,0,0));
+      move(vec3_type(-1,0,0));
     }
     else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
-      move(vec3_type(-1,0,0));
+      move(vec3_type(1,0,0));
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
@@ -92,11 +98,11 @@ public:
   virtual void mouseLook(T dx, T dy)
   {
     _rot = rotate(rotate(_rot, dy * ROT_SCALE, vec3_type(1,0,0)),
-      -dx * ROT_SCALE, vec3_type(0,1,0));
+      dx * ROT_SCALE, vec3_type(0,1,0));
   }
   virtual void doRoll(T dz)
   {
-    _rot = rotate(_rot, dz * ROLL_AMOUNT, vec3_type(0,0,1));
+    _rot = rotate(_rot, -dz * ROLL_AMOUNT, vec3_type(0,0,1));
   }
   virtual mat4_type getMat() const
   {
@@ -118,13 +124,13 @@ public:
     : Camera<T,P>(eye) {}
   virtual void mouseLook(T dx,T dy)
   {
-    _quat = _quat * (angleAxis(-dx * ROT_SCALE, vec3_type(0,1,0)) *
+    _quat = _quat * (angleAxis(dx * ROT_SCALE, vec3_type(0,1,0)) *
       angleAxis(dy * ROT_SCALE, vec3_type(1,0,0)));
     _quat = normalize(_quat);
   }
   virtual void doRoll(T dz)
   {
-    _quat = _quat * angleAxis(dz * ROLL_AMOUNT, vec3_type(0,0,1));
+    _quat = _quat * angleAxis(-dz * ROLL_AMOUNT, vec3_type(0,0,1));
     _quat = normalize(_quat);
   }
   virtual mat4_type getMat() const
