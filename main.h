@@ -34,12 +34,15 @@ GLint view_location = 0;
 GLint projection_location = 0;
 GLint world_location = 0;
 
+const Camera<float>::vec3_type INITIAL_EYE_F(0,2,0);
+const Camera<double>::vec3_type INITIAL_EYE_D(0,2,0);
+
 Camera<float>
-  *ecamf = new EulerCamera<float>(),
-  *qcamf = new QuatCamera<float>();
+  *ecamf = new EulerCamera<float>(INITIAL_EYE_F),
+  *qcamf = new QuatCamera<float>(INITIAL_EYE_F);
 Camera<double>
-  *ecamd = new EulerCamera<double>(),
-  *qcamd = new QuatCamera<double>();
+  *ecamd = new EulerCamera<double>(INITIAL_EYE_D),
+  *qcamd = new QuatCamera<double>(INITIAL_EYE_D);
 
 double mx = -1, my = -1;
 
