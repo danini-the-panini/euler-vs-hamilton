@@ -14,15 +14,14 @@ public:
   typedef tvec4<T,P> vec4_type;
   typedef tmat4x4<T,P> mat4_type;
 
-  vec3_type eye;
-  Camera()
-    : eye(vec3(2,2,2))
+  Camera(vec3_type eye = vec3_type(0,0,0))
+    : _eye(eye)
   {}
   virtual mat4 getView() const
   {
     vec3_type up, fwd, r;
     cameraAxes(up, fwd, r);
-    return lookAt((vec3)eye, (vec3)(eye+fwd), (vec3)up);
+    return lookAt((vec3)_eye, (vec3)(_eye+fwd), (vec3)up);
   }
   virtual void mouseLook(T,T) = 0;
   virtual void doRoll(T) = 0;
@@ -30,7 +29,7 @@ public:
   {
     vec3_type up, fwd, r;
     cameraAxes(up, fwd, r);
-    eye += r * t.x + up * t.y + fwd * t.z;
+    _eye += r * t.x + up * t.y + fwd * t.z;
   }
   void cameraAxes(vec3_type& up_out, vec3_type& fwd_out,
     vec3_type& r_out) const
@@ -76,6 +75,8 @@ public:
       doRoll(1);
     }
   }
+protected:
+  vec3_type _eye;
 };
 
 template <typename T, precision P = highp>
