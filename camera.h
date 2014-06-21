@@ -88,7 +88,8 @@ public:
   typedef tmat4x4<T,P> mat4_type;
 
   mat4_type rot;
-  EulerCamera() : rot(mat4_type(1)) {}
+  EulerCamera(vec3_type eye = vec3_type(0,0,0))
+    : Camera<T,P>(eye), rot(mat4_type(1)) {}
   virtual void mouseLook(T dx, T dy)
   {
     rot = rotate(rotate(rot, dy * ROT_SCALE, vec3_type(1,0,0)),
@@ -113,6 +114,8 @@ public:
   typedef tmat4x4<T,P> mat4_type;
 
   tquat<T,P> quat;
+  QuatCamera(vec3_type eye = vec3_type(0,0,0))
+    : Camera<T,P>(eye) {}
   virtual void mouseLook(T dx,T dy)
   {
     quat = quat * (angleAxis(-dx * ROT_SCALE, vec3_type(0,1,0)) *
