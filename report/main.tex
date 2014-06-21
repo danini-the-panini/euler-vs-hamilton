@@ -18,4 +18,19 @@
 
 \section{Introduction}
 
+Rotation --- or rather the \emph{representation} of rotation --- in three-dimensional affine space is surprisingly difficult.
+There are many different ways to represent these rotations, e.g. Euler-angle, axis-angle, rotation matrices, or unit quaternion parameterizations.
+Of these examples, the Euler-angle system is the most villified, while the unit quaternion parameterization is often said to be superior.
+Quaternions solve the gimbal lock problems that Euler-angle systems experience, and are said to be more numerically stable.
+It has also been claimed that Quaternions are a more efficient method of calculating rotations.
+We have no reason to doubt these claims, in fact they seem sensible to us.
+However, we question the conclusion that all animation systems should use quaternions as a parameterization of their rotations.
+In this paper we will specifically look at the special case of an interactive three dimensional camera with three degrees of freedom (pitch, roll and yaw) in order to see whether the claims that quaternions are superior can be empirically supported.
+These claims are that Quaternions do not suffer from gimbal lock; are more numerically stable than other approaches; and more performant.
+To the best of the authors' knowledge, there are no research papers that publish empirically derived figures supporting these claims.
+It is important to have access to such figures, however, since what is true in theory may not hold up in practise once implemented on a real computer system ---
+especially due to factors such as the numerical instability that is introduced by the inaccurate floating point mathematics as implemented for computers, or the fact that graphics cards and their drivers may have hidden performance cliffs and undocumented behaviour.
+We have also been unable to find any discussion in the literature about which parameterization to use for floating cameras with three degrees of freedom.
+The contribution of this paper is then a conclusion as to this best possible parameterization and the provision of empirical figures to back up various claims.
+
 \end{document}
