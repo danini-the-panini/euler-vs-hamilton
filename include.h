@@ -26,6 +26,7 @@ using glm::mat4;
 using glm::normalize;
 using glm::perspective;
 using glm::rotate;
+using glm::translate;
 using glm::scale;
 using glm::mat4_cast;
 using glm::value_ptr;

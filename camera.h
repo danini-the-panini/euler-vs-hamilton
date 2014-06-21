@@ -5,6 +5,7 @@
 
 const float ROT_SCALE = 0.2f;
 const float ROLL_AMOUNT = 2.f;
+const float MOVE_AMOUNT = .1f;
 
 template <typename T>
 class Camera
@@ -14,11 +15,9 @@ public:
   Camera()
     : eye(vec3(2,2,2))
   {}
-  virtual mat4 getView() const
+  virtual tmat4x4<T,highp> getView() const
   {
-    tvec3<T,highp> up, fwd, r;
-    cameraAxes(up, fwd, r);
-    return lookAt((vec3)eye, (vec3)(eye+fwd), (vec3)up);
+    return translate(getMat(), eye);
   }
   virtual void mouseLook(T,T) = 0;
   virtual void doRoll(T) = 0;
@@ -32,9 +31,9 @@ public:
     tvec3<T,highp>& r_out) const
   {
     tmat4x4<T,highp> rot = getMat();
-    up_out = normalize((tvec3<T,highp>)(rot * tvec4<T,highp>(0,1,0,0)).xyz());
-    fwd_out = normalize((tvec3<T,highp>)(rot * tvec4<T,highp>(0,0,1,0)).xyz());
-    r_out = normalize((tvec3<T,highp>)(rot * tvec4<T,highp>(1,0,0,0)).xyz());
+    up_out = normalize((tvec3<T,highp>)(rot * tvec4<T,highp>(0,MOVE_AMOUNT,0,0)).xyz());
+    fwd_out = normalize((tvec3<T,highp>)(rot * tvec4<T,highp>(0,0,MOVE_AMOUNT,0)).xyz());
+    r_out = normalize((tvec3<T,highp>)(rot * tvec4<T,highp>(MOVE_AMOUNT,0,0,0)).xyz());
   }
   virtual tmat4x4<T,highp> getMat() const = 0;
   void doKeys(GLFWwindow* window)

@@ -53,7 +53,7 @@ void drawQuarter(int top, int left, int width, int height, Camera<T>* cam)
   glViewport(top, left, width, height);
 
   float ratio = (float) width / (float) height;
-  mat4 view = cam->getView();
+  mat4 view(cam->getView());
   mat4 projection = perspective(fovy, ratio, near, far);
 
   glUniformMatrix4fv(view_location, 1, GL_FALSE, value_ptr(view));
