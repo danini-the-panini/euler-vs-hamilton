@@ -5,6 +5,7 @@
 
 const float ROT_SCALE = 0.2f;
 const float ROLL_AMOUNT = 2.f;
+const float MOVE_AMOUNT = .5f;
 
 template <typename T, precision P = highp>
 class Camera
@@ -50,27 +51,27 @@ public:
   {
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
-      move(vec3_type(0,0,1));
+      move(vec3_type(0,0,MOVE_AMOUNT));
     }
     else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
-      move(vec3_type(0,0,-1));
+      move(vec3_type(0,0,-MOVE_AMOUNT));
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
-      move(vec3_type(-1,0,0));
+      move(vec3_type(-MOVE_AMOUNT,0,0));
     }
     else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
-      move(vec3_type(1,0,0));
+      move(vec3_type(MOVE_AMOUNT,0,0));
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
-      move(vec3_type(0,1,0));
+      move(vec3_type(0,MOVE_AMOUNT,0));
     }
     else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
     {
-      move(vec3_type(0,-1,0));
+      move(vec3_type(0,-MOVE_AMOUNT,0));
     }
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
     {
