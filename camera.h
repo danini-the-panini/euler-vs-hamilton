@@ -85,15 +85,18 @@ protected:
   vec3_type _eye;
 };
 
+/**
+ * Camera implementation using the Rotation Matrix representation.
+ */
 template <typename T, precision P = highp>
-class EulerCamera : public Camera<T,P>
+class RotMatCamera : public Camera<T,P>
 {
 public:
   typedef tvec3<T,P> vec3_type;
   typedef tvec4<T,P> vec4_type;
   typedef tmat4x4<T,P> mat4_type;
 
-  EulerCamera(vec3_type eye = vec3_type(0,0,0))
+  RotMatCamera(vec3_type eye = vec3_type(0,0,0))
     : Camera<T,P>(eye), _rot(mat4_type(1)) {}
   virtual void mouseLook(T dx, T dy)
   {
@@ -112,6 +115,9 @@ private:
   mat4_type _rot;
 };
 
+/**
+ * Camera implementation using the Quaternion representation.
+ */
 template <typename T, precision P = highp>
 class QuatCamera : public Camera<T,P>
 {

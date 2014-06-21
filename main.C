@@ -6,20 +6,20 @@ void mainLoop()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // top-left: Euler Camera (float)
-  drawQuarter(0, 0, width/2, height/2, ecamf);
+  drawQuarter(0, 0, width/2, height/2, rcamf);
   // top-right: Euler Camera (double)
-  drawQuarter(width/2, 0, width/2, height/2, ecamd);
+  drawQuarter(width/2, 0, width/2, height/2, rcamd);
 
   // bottom-left: Quaternion Camera (float)
   drawQuarter(0, height/2, width/2, height/2, qcamf);
   // bottom-right: Quaternion Camera (double)
   drawQuarter(width/2, height/2, width/2, height/2, qcamd);
 
-  double ediff = getDifference(ecamf, ecamd);
+  double rdiff = getDifference(rcamf, rcamd);
   double qdiff = getDifference(qcamf, qcamd);
 
   cout.precision(15);
-  cout << std::fixed << ediff << ", " << qdiff << endl;
+  cout << std::fixed << rdiff << ", " << qdiff << endl;
 
   /* Swap front and back buffers */
   glfwSwapBuffers(window);
@@ -165,10 +165,10 @@ void mouseMoved(GLFWwindow* window, double x, double y)
       double dx = x - mx;
       double dy = y - my;
 
-      ecamf->mouseLook(dx,dy);
+      rcamf->mouseLook(dx,dy);
       qcamf->mouseLook(dx,dy);
 
-      ecamd->mouseLook(dx,dy);
+      rcamd->mouseLook(dx,dy);
       qcamd->mouseLook(dx,dy);
     }
 

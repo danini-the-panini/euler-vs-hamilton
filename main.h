@@ -38,10 +38,10 @@ const Camera<float>::vec3_type INITIAL_EYE_F(0,2,0);
 const Camera<double>::vec3_type INITIAL_EYE_D(0,2,0);
 
 Camera<float>
-  *ecamf = new EulerCamera<float>(INITIAL_EYE_F),
+  *rcamf = new RotMatCamera<float>(INITIAL_EYE_F),
   *qcamf = new QuatCamera<float>(INITIAL_EYE_F);
 Camera<double>
-  *ecamd = new EulerCamera<double>(INITIAL_EYE_D),
+  *rcamd = new RotMatCamera<double>(INITIAL_EYE_D),
   *qcamd = new QuatCamera<double>(INITIAL_EYE_D);
 
 double mx = -1, my = -1;
