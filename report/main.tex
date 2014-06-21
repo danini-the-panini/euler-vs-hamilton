@@ -4,78 +4,61 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage[style=numeric, backend=bibtex]{biblatex}
 \usepackage{graphicx}
 \usepackage[colorinlistoftodos]{todonotes}
 \usepackage{pgfplots}
 \usepackage{pgfplotstable}
 
-\title{Comparing Numeric Stability of Euler angles and Quaternions when Performing Rotations}
+\addbibresource{main.bib}
 
-\author{Daniel Smith (11306026)}
-
-\date{\today}
+\title{Euler vs. Hamilton --- Investigating Claims of Quaternion Superiority for Rotation Parameterization of Interactive 3D Camera Control Problems}
+\author{}
+\date{}
 
 \begin{document}
 \maketitle
 
 \section{Introduction}
 
-Euler angles have long been used to perform rotations in three-dimensional (3D) space, in both the fields of science and engineering. Euler angles are represented as three values: pitch, yaw, and roll. These values represent rotations about the X, Y, and Z axes respectively. Euler angles are simple to understand, implement, use, and to visualize. However, they suffer from a horrible affliction known as gimbal lock, where one can lose one or more degrees of freedom. To make matters worse, Euler angles supposedly suffer from numeric instability when calculated on a computer using limited-precision floating point mathematics.
+Rotation --- or rather the \emph{representation} of rotation --- in three-dimensional affine space is surprisingly difficult.
+There are many different ways to represent these rotations, e.g. Euler-angle, axis-angle, rotation matrices, or unit quaternion parameterizations.
+Of these examples, the Euler-angle system is the most villified, while the unit quaternion parameterization is often said to be superior.
+Quaternions solve the gimbal lock problems that Euler-angle systems experience, and are said to be more numerically stable.
+It has also been claimed that Quaternions are a more efficient method of calculating rotations.
+We have no reason to doubt these claims, in fact they seem sensible to us.
+However, we question the conclusion that all animation systems should use quaternions as a parameterization of their rotations.
+In this paper we will specifically look at the special case of an interactive three dimensional camera with three degrees of freedom (pitch, roll and yaw) in order to see whether the claims that quaternions are superior can be empirically supported.
+These claims are that Quaternions do not suffer from gimbal lock; are more numerically stable than other approaches; and more performant.
+To the best of the authors' knowledge, there are no research papers that publish empirically derived figures supporting these claims.
+It is important to have access to such figures, however, since what is true in theory may not hold up in practise once implemented on a real computer system ---
+especially due to factors such as the numerical instability that is introduced by the inaccurate floating point mathematics as implemented for computers, or the fact that graphics cards and their drivers may have hidden performance cliffs and undocumented behaviour.
+We have also been unable to find any discussion in the literature about which parameterization to use for floating cameras with three degrees of freedom.
+The contribution of this paper is then a conclusion as to this best possible parameterization and the provision of empirical figures to back up various claims.
 
-Quaternion Mathematics, an amazing invention by a man named Hamilton, is a newer way of representing rotations in 3D space. They remove the problem of gimbal lock, are reported to suffer much less from numeric instability, and add a number of new features such as linear interpolation of rotations. Rotations using quaternions are even faster to compute than when using euler angles. However, despite it being the holy grail of 3D rotations, it comes at the cost of being difficult to understand and visualize. However, there are numerous maths libraries, including the well-known GLM library, that include complete implementations of quaternions, making their use somewhat simpler.
+\section{Parameterizations}
 
-In this report I will investigate and compare the numeric instability of Euler angles and quaternions.
+Several parameterizations of rotations in three dimensions have already been proposed.
+We recapitulate some of them here, for the uninitaited reader.
 
-\section{The Setup}
+\subsection{Euler-Angle}
 
-For my experiment I set up a basic OpenGL scene that included a camera and a checkerboard floating in space. I then created two different implementations of the camera: one using Euler angles for rotation, and one using quaternions. I then created two instances of each camera implementation: one using single-precision and the other using double-precision floating point values. I then hooked input handling to all the cameras and drew the scene from each of their viewpoints in a window split into four.
+The Euler-angle system is a parameterization based on three separate angles: roll, pitch and yaw --- these are the rotation amounts around three separate axes: the X, Y, and Z axes, respectively \parencite[11]{diebel06}.
+The problem with this system is one of gimball lock.
+Briefly stated, a rotation of one of the axes can bring it into the plane of one of the other axes.
+At this stage, a rotation about any one of these two axes is equivalent to a rotation about the other, we have therefore lost a degree of freedom \parencite[4]{pletinckx89}.
 
-\section{The Experiment}
+\subsection{Axis-Angle}
 
-To test for numeric instability, I calculate all rotations both with single-precision and double-precision floating point arithmetic. Due to rounding errors, the difference between the single- and double-precision calculations should slowly increase. The more numeric instability, the more rounding errors, and ultimately the larger the difference between the two difference calculations.
+The axis-angle representation collapses all rotations to a rotation with a certain magnitude about a single axis.
+The magnitude of this rotation becomes the length of a vector with a direction that corresponds to this axis \parencite[18]{diebel06}.
 
-To observe how each rotation implementation fares, I rotate the cameras around on all axes over a period of time, recording the average difference between the results of each calculating each rotation. Since the rounding errors are compounded, the error should increase over time. The implementation with the most numeric stability, and therefore the least amount of rounding errors, should exhibit the smaller increase in error over time.
+\subsection{Rotation Matrices}
 
-\section{Results}
+Rotation matrices represent rotations as the components of a $3 \times 3$ matrix of real vlaues.
+Rotation matrices are convenient because they work well with the well-established method of using matrices to represent affine transformations in computer graphics applications.
+Rotation matrices have to be kept ortho-normal, if they deviate from this property then they will alter the length of vectors, leading to distortions in the shape of the objects being rotated \parencite[4--5]{diebel06}.
 
-The results were collected over a few minutes and are shown in the graph below.
-
-\vspace{5 mm}
-
-\begin{center}
-  \begin{tikzpicture}
-    \begin{axis}
-      [
-        title={Differences between single- and double- precision calculations},
-        xlabel={Time},
-        ylabel={Difference $\times 10^7$},
-        xticklabels={,,},
-        ymajorgrids=true,
-        grid style=dashed,
-        legend style={at={(0.5,-0.25)},
-          anchor=north,legend columns=-1}
-      ]
-      \addplot [
-        color=red
-      ] table [
-        x expr=\coordindex,
-        y expr=\thisrowno{0}*100
-      ] {results_euler.dat};
-      \addplot [
-        color=blue
-      ] table [
-        x expr=\coordindex,
-        y expr=\thisrowno{0}*100
-      ] {results_quat.dat};
-      \legend{Euler angles,Quaternions};
-    \end{axis}
-  \end{tikzpicture}
-\end{center}
-
-\section{Conclusion}
-
-As can be seen from the results, the amount of accumulated error over time when using Euler angles is huge compared to that of quaternions. In fact, it appears as if quaternions exhibit almost no numeric instability. While I cannot say for sure, it would appear that rounding errors add up exponentially. If that is the case, and this is recorded from only a few minutes, imagine the error that would accumulate over the period of a few hours, or even days.
-
-The solid conclusion is that Euler angles exhibit notably more numeric instability than quaternions do.
+\printbibliography
 
 \end{document}
