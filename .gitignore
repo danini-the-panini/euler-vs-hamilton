@@ -23,3 +23,5 @@ main
 
 # LaTeX Cruft
 main.pdf
+main-blx.bib
+main.run.xml
