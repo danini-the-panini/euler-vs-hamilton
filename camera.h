@@ -101,8 +101,14 @@ public:
     : Camera<T,P>(eye), _rot(mat4_type(1)) {}
   virtual void mouseLook(T dx, T dy)
   {
-    _rot = rotate(rotate(_rot, dy * ROT_SCALE, vec3_type(1,0,0)),
-      dx * ROT_SCALE, vec3_type(0,1,0));
+    tvec4<T, P> global_x_axis(1, 0, 0, 0);
+    tvec4<T, P> local_x_axis = _rot * global_x_axis;
+    /*cout << local_x_axis.x << ", " << local_x_axis.y << ", " << local_x_axis.z 
+    << endl;*/
+    tvec4<T, P> global_y_axis(0, 1, 0, 0);
+    tvec4<T, P> local_y_axis = _rot * global_y_axis;
+    _rot = rotate(rotate(_rot, dy * ROT_SCALE, vec3_type(local_x_axis)),
+      dx * ROT_SCALE, vec3_type(local_y_axis));
   }
   virtual void doRoll(T dz)
   {
