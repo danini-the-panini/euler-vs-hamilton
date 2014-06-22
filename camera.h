@@ -3,7 +3,7 @@
 
 #include "include.h"
 
-const float ROT_SCALE = 0.2f;
+const float ROT_SCALE = 0.01f;
 const float ROLL_AMOUNT = 2.f;
 const float MOVE_AMOUNT = .5f;
 
