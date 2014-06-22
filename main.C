@@ -136,10 +136,12 @@ void init()
   initWindow();
   initGlew();
 
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   if (!is_reading)
+  {
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouseCheck);
+  }
 
   glEnable(GL_VERTEX_ARRAY);
   glEnable(GL_DEPTH_TEST);
