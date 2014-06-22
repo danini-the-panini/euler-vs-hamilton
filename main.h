@@ -34,13 +34,16 @@ GLint view_location = 0;
 GLint projection_location = 0;
 GLint world_location = 0;
 
-const Camera<float>::vec3_type INITIAL_EYE_F(0,2,0);
-const Camera<double>::vec3_type INITIAL_EYE_D(0,2,0);
+typedef Camera<float,lowp> CamF;
+typedef Camera<double,highp> CamD;
 
-Camera<float>
-  *rcamf = new RotMatCamera<float>(INITIAL_EYE_F),
-  *qcamf = new QuatCamera<float>(INITIAL_EYE_F);
-Camera<double>
+const CamF::vec3_type INITIAL_EYE_F(0,2,0);
+const CamD::vec3_type INITIAL_EYE_D(0,2,0);
+
+CamF
+  *rcamf = new RotMatCamera<float,lowp>(INITIAL_EYE_F),
+  *qcamf = new QuatCamera<float,lowp>(INITIAL_EYE_F);
+CamD
   *rcamd = new RotMatCamera<double>(INITIAL_EYE_D),
   *qcamd = new QuatCamera<double>(INITIAL_EYE_D);
 
@@ -60,14 +63,14 @@ void handleArguments(int argc, char ** argv);
 void mouseMoved(double x, double y);
 void mouseCheck(GLFWwindow*,double,double);
 
-double getDifference(Camera<float>* camf, Camera<double>* camd);
+double getDifference(CamF* camf, CamD* camd);
 
 void handleInput();
 void doKeyToCameras(int key);
 void checkInputFile();
 
-template <typename T>
-void drawQuarter(int top, int left, int w, int h, Camera<T>* cam)
+template <typename T, precision P = highp>
+void drawQuarter(int top, int left, int w, int h, Camera<T,P>* cam)
 {
   glViewport(top, left, w, h);
 

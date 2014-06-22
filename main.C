@@ -250,10 +250,10 @@ void loadGeometry()
   glUniformMatrix4fv(world_location, 1, GL_FALSE, value_ptr(world));
 }
 
-double getDifference(Camera<float>* camf, Camera<double>* camd)
+double getDifference(CamF* camf, CamD* camd)
 {
-  tmat4x4<double,highp> matf = (tmat4x4<double,highp>) camf->getMat();
-  tmat4x4<double,highp> matd = camd->getMat();
+  CamD::mat4_type matf = (CamD::mat4_type) camf->getMat();
+  CamD::mat4_type matd = camd->getMat();
 
   double diff = 0;
 

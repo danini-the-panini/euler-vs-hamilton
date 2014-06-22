@@ -19,12 +19,12 @@ public:
   Camera(vec3_type eye = vec3_type(0,0,0))
     : _eye(eye)
   {}
-  virtual tmat4x4<T,highp> getView() const
+  virtual mat4_type getView() const
   {
     vec3_type up, fwd, r;
     cameraAxes(up, fwd, r);
 
-    return tmat4x4<T,highp> (
+    return mat4_type (
       r.x, up.x, -fwd.x, .0f,
       r.y, up.y, -fwd.y, .0f,
       r.z, up.z, -fwd.z, .0f,
@@ -83,6 +83,53 @@ protected:
 };
 
 /**
+ * Camera implementation using orthonormal axes representation.
+ */
+template <typename T, precision P = highp>
+class AxisCamera : public Camera<T,P>
+{
+public:
+  typedef tvec3<T,P> vec3_type;
+  typedef tvec4<T,P> vec4_type;
+  typedef tmat4x4<T,P> mat4_type;
+
+  AxisCamera(vec3_type eye = vec3_type(0,0,0))
+    : Camera<T,P>(eye), _s(1,0,0), _u(0,1,0), _f(0,0,1) {}
+  virtual mat4_type getView()
+  {
+    return mat4_type (
+      _s.x, _u.x, -_f.x, .0f,
+      _s.y, _u.y, -_f.y, .0f,
+      _s.z, _u.z, -_f.z, .0f,
+      -dot(_s, this->_eye), -dot(_u, this->_eye), dot(_f, this->_eye), 1.f
+    );
+  }
+  virtual void mouseLook(T dx, T dy)
+  {
+    _f = normalize((rotate(rotate(mat4_type(1), dx * ROT_SCALE, _u),
+          dy * ROT_SCALE, _s) * vec4_type(_f, 0)).xyz());
+    _s = normalize(cross(_u,_f));
+    _u = normalize(_f,_s);
+  }
+  virtual void doRoll(T dz)
+  {
+    _u = normalize((rotate(mat4_type(1), dz * ROT_SCALE, _f) * vec4_type(_u, 0)).xyz());
+    _s = normalize(cross(_u,_f));
+  }
+  virtual mat4_type getMat() const
+  {
+    return mat4_type (
+      _s.x, _u.x, -_f.x, .0f,
+      _s.y, _u.y, -_f.y, .0f,
+      _s.z, _u.z, -_f.z, .0f,
+      .0f, .0f, .0f, 1.f
+    );
+  }
+private:
+  vec3_type _u, _s, _f;
+};
+
+/**
  * Camera implementation using the Rotation Matrix representation.
  */
 template <typename T, precision P = highp>
@@ -94,6 +141,36 @@ public:
   typedef tmat4x4<T,P> mat4_type;
 
   RotMatCamera(vec3_type eye = vec3_type(0,0,0))
+    : Camera<T,P>(eye), _rot(mat4_type(1)) {}
+  virtual void mouseLook(T dx, T dy)
+  {
+    _rot = rotate(rotate(_rot, dy * ROT_SCALE, vec3_type(1,0,0)),
+        dx * ROT_SCALE, vec3_type(0,1,0));
+  }
+  virtual void doRoll(T dz)
+  {
+    _rot = rotate(_rot, -dz * ROLL_AMOUNT, vec3_type(0,0,1));
+  }
+  virtual mat4_type getMat() const
+  {
+    return _rot;
+  }
+private:
+  mat4_type _rot;
+};
+
+/**
+ * Camera implementation using the Rotation Matrix representation with orthonormalisation.
+ */
+template <typename T, precision P = highp>
+class OrthoRotMatCamera : public Camera<T,P>
+{
+public:
+  typedef tvec3<T,P> vec3_type;
+  typedef tvec4<T,P> vec4_type;
+  typedef tmat4x4<T,P> mat4_type;
+
+  OrthoRotMatCamera(vec3_type eye = vec3_type(0,0,0))
     : Camera<T,P>(eye), _rot(mat4_type(1)) {}
   virtual void mouseLook(T dx, T dy)
   {

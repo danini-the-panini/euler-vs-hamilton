@@ -25,6 +25,7 @@ using glm::detail::tvec4;
 using glm::dot;
 using glm::highp;
 using glm::lookAt;
+using glm::lowp;
 using glm::mat4;
 using glm::normalize;
 using glm::perspective;
