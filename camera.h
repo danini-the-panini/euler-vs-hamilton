@@ -3,8 +3,8 @@
 
 #include "include.h"
 
-const float ROT_SCALE = 0.01f;
-const float ROLL_AMOUNT = 2.f;
+const float ROT_SCALE = 0.00349f;
+const float ROLL_AMOUNT = .0349f;
 const float MOVE_AMOUNT = .5f;
 
 template <typename T, precision P = highp>
