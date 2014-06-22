@@ -36,6 +36,7 @@ using glm::translate;
 using glm::scale;
 using glm::mat4_cast;
 using glm::value_ptr;
+using glm::dvec3;
 using glm::vec3;
 using glm::vec4;
 using std::cerr;
