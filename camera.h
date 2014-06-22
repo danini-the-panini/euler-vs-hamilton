@@ -2,6 +2,7 @@
 #define CAMERA_H
 
 #include "include.h"
+#include "orthonormalise.h"
 
 const float ROT_SCALE = 0.00349f;
 const float ROLL_AMOUNT = .0349f;
@@ -101,8 +102,8 @@ public:
     : Camera<T,P>(eye), _rot(mat4_type(1)) {}
   virtual void mouseLook(T dx, T dy)
   {
-    _rot = rotate(rotate(_rot, dy * ROT_SCALE, vec3_type(1,0,0)),
-      dx * ROT_SCALE, vec3_type(0,1,0));
+    _rot = orthonormalise(rotate(rotate(_rot, dy * ROT_SCALE, vec3_type(1,0,0)),
+      dx * ROT_SCALE, vec3_type(0,1,0)));
   }
   virtual void doRoll(T dz)
   {
