@@ -62,8 +62,9 @@ void mouseCheck(GLFWwindow*,double,double);
 
 double getDifference(Camera<float>* camf, Camera<double>* camd);
 
-void doKeys();
+void handleInput();
 void doKeyToCameras(int key);
+void checkInputFile();
 
 template <typename T>
 void drawQuarter(int top, int left, int w, int h, Camera<T>* cam)

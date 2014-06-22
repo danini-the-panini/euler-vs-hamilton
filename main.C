@@ -1,67 +1,9 @@
 #include "main.h"
 
-void doKeys()
-{
-  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-  {
-    glfwSetWindowShouldClose(window, GL_TRUE);
-  }
-
-  double x, y;
-  if (is_reading)
-  {
-    input_file >> mouse_ready >> x >> y;
-  }
-  else
-  {
-    glfwGetCursorPos(window, &x, &y);
-
-    if (is_writing)
-      output_file << mouse_ready << " " << x << " " << y << " ";
-  }
-  mouseMoved(x, y);
-
-  if (!is_reading)
-  {
-    for (unsigned i = 0; i < sizeof(KEYS)/sizeof(int); i++)
-    {
-      if (glfwGetKey(window, KEYS[i]) == GLFW_PRESS)
-      {
-        doKeyToCameras(KEYS[i]);
-
-        if (is_writing)
-          output_file << KEYS[i] << " ";
-      }
-    }
-
-    if (is_writing)
-      output_file << "-1 ";
-
-  } else
-  {
-    int key;
-    input_file >> key;
-    while (key != -1)
-    {
-      doKeyToCameras(key);
-      input_file >> key;
-    }
-  }
-  if (input_file.eof())
-    glfwSetWindowShouldClose(window, GL_TRUE);
-}
-
-void doKeyToCameras(int key)
-{
-  rcamf->doKey(key);
-  rcamd->doKey(key);
-  qcamf->doKey(key);
-  qcamd->doKey(key);
-}
 
 void mainLoop()
 {
-  doKeys();
+  handleInput();
 
   glfwGetFramebufferSize(window, &width, &height);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -86,6 +28,96 @@ void mainLoop()
   glfwSwapBuffers(window);
   /* Poll for and process events */
   glfwPollEvents();
+}
+
+void handleInput()
+{
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+  {
+    glfwSetWindowShouldClose(window, GL_TRUE);
+  }
+
+  double x, y;
+  int key;
+  if (is_reading)
+  {
+    input_file >> mouse_ready >> x >> y;
+    checkInputFile();
+
+    input_file >> key;
+    checkInputFile();
+    while (key != -1)
+    {
+      doKeyToCameras(key);
+      input_file >> key;
+      checkInputFile();
+    }
+  }
+  else
+  {
+    glfwGetCursorPos(window, &x, &y);
+
+    if (is_writing)
+      output_file << mouse_ready << " " << x << " " << y << " ";
+
+    for (unsigned i = 0; i < sizeof(KEYS)/sizeof(int); i++)
+    {
+      if (glfwGetKey(window, KEYS[i]) == GLFW_PRESS)
+      {
+        doKeyToCameras(KEYS[i]);
+
+        if (is_writing)
+          output_file << KEYS[i] << " ";
+      }
+    }
+
+    if (is_writing)
+      output_file << "-1" << endl;
+  }
+  mouseMoved(x, y);
+}
+
+void doKeyToCameras(int key)
+{
+  rcamf->doKey(key);
+  rcamd->doKey(key);
+  qcamf->doKey(key);
+  qcamd->doKey(key);
+}
+
+void mouseCheck(GLFWwindow*,double x,double y)
+{
+  if (!mouse_ready)
+  {
+    mouse_ready = true;
+    mx = x; my = y;
+
+    if (is_writing)
+      output_file << "0 " << mx << " " << my << " -1 ";
+  }
+}
+
+void mouseMoved(double x, double y)
+{
+  if (mouse_ready)
+  {
+    double dx = x - mx;
+    double dy = y - my;
+
+    rcamf->mouseLook((float)dx,(float)dy);
+    qcamf->mouseLook((float)dx,(float)dy);
+
+    rcamd->mouseLook(dx,dy);
+    qcamd->mouseLook(dx,dy);
+  }
+
+  mx = x; my = y;
+}
+
+void checkInputFile()
+{
+  if (input_file.eof())
+    glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
 void initGlfw()
@@ -216,34 +248,6 @@ void loadGeometry()
   world = scale(world, vec3(10,10,10));
 
   glUniformMatrix4fv(world_location, 1, GL_FALSE, value_ptr(world));
-}
-
-void mouseCheck(GLFWwindow*,double x,double y)
-{
-  if (!mouse_ready)
-  {
-    mouse_ready = true;
-    mx = x; my = y;
-
-    if (is_writing)
-      output_file << "0 " << mx << " " << my << " -1 ";
-  }
-}
-void mouseMoved(double x, double y)
-{
-  if (mouse_ready)
-  {
-    double dx = x - mx;
-    double dy = y - my;
-
-    rcamf->mouseLook((float)dx,(float)dy);
-    qcamf->mouseLook((float)dx,(float)dy);
-
-    rcamd->mouseLook(dx,dy);
-    qcamd->mouseLook(dx,dy);
-  }
-
-  mx = x; my = y;
 }
 
 double getDifference(Camera<float>* camf, Camera<double>* camd)
