@@ -42,7 +42,7 @@ void shaderLog(GLuint handle)
      int len;
      glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &len);
      /* Get the info log. */
-     char* log = new char[len];
+     char* log = new char[(unsigned)len];
      glGetShaderInfoLog(handle, len, &len, log);
      /* Print error */
      cerr << "Compilation error: " << log << endl;
@@ -63,7 +63,7 @@ void programLog(GLuint handle)
      int len;
      glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &len);
      /* Get the info log. */
-     char* log = new char[len];
+     char* log = new char[(unsigned)len];
      glGetProgramInfoLog(handle, len, &len, log);
      /* Print error */
      cerr << "Link error: " << log << endl;
