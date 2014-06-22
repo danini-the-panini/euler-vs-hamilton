@@ -140,6 +140,8 @@ void init()
   initWindow();
   initGlew();
 
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
   if (!is_reading)
     glfwSetCursorPosCallback(window, mouseCheck);
 
