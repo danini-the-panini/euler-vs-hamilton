@@ -19,7 +19,7 @@ main: shader.o main.o
 %.o:
 	${CC}  ${CFLAGS} -c $< -o $@
 
-main.o: main.C main.h shader.h camera.h include.h
+main.o: main.C main.h shader.h camera.h include.h orthonormalise.h
 shader.o: shader.C shader.h include.h
 
 .PHONY : clean
