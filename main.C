@@ -15,6 +15,9 @@ void mainLoop()
     double x, y;
     input_file >> x >> y;
     mouseMoved(window, x, y);
+
+    if (input_file.eof())
+      glfwSetWindowShouldClose(window, GL_TRUE);
   }
 
   glfwGetFramebufferSize(window, &width, &height);
