@@ -3,7 +3,7 @@
 
 #include "include.h"
 
-const float ROT_SCALE = 0.2f;
+const float ROT_SCALE = 0.01f;
 const float ROLL_AMOUNT = 2.f;
 const float MOVE_AMOUNT = .5f;
 
@@ -18,12 +18,12 @@ public:
   Camera(vec3_type eye = vec3_type(0,0,0))
     : _eye(eye)
   {}
-  virtual mat4 getView() const
+  virtual tmat4x4<T,highp> getView() const
   {
     vec3_type up, fwd, r;
     cameraAxes(up, fwd, r);
 
-    return mat4(
+    return tmat4x4<T,highp> (
       r.x, up.x, -fwd.x, .0f,
       r.y, up.y, -fwd.y, .0f,
       r.z, up.z, -fwd.z, .0f,
@@ -47,37 +47,37 @@ public:
     r_out = normalize((vec3_type)(rot * vec4_type(1,0,0,0)).xyz());
   }
   virtual mat4_type getMat() const = 0;
-  void doKeys(GLFWwindow* window)
+  void doKeys(GLFWwindow* w)
   {
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(w, GLFW_KEY_W) == GLFW_PRESS)
     {
       move(vec3_type(0,0,MOVE_AMOUNT));
     }
-    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    else if (glfwGetKey(w, GLFW_KEY_S) == GLFW_PRESS)
     {
       move(vec3_type(0,0,-MOVE_AMOUNT));
     }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    if (glfwGetKey(w, GLFW_KEY_A) == GLFW_PRESS)
     {
       move(vec3_type(-MOVE_AMOUNT,0,0));
     }
-    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    else if (glfwGetKey(w, GLFW_KEY_D) == GLFW_PRESS)
     {
       move(vec3_type(MOVE_AMOUNT,0,0));
     }
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    if (glfwGetKey(w, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
       move(vec3_type(0,MOVE_AMOUNT,0));
     }
-    else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+    else if (glfwGetKey(w, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
     {
       move(vec3_type(0,-MOVE_AMOUNT,0));
     }
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+    if (glfwGetKey(w, GLFW_KEY_Q) == GLFW_PRESS)
     {
       doRoll(-1);
     }
-    else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+    else if (glfwGetKey(w, GLFW_KEY_E) == GLFW_PRESS)
     {
       doRoll(1);
     }
@@ -101,8 +101,14 @@ public:
     : Camera<T,P>(eye), _rot(mat4_type(1)) {}
   virtual void mouseLook(T dx, T dy)
   {
-    _rot = rotate(rotate(_rot, dy * ROT_SCALE, vec3_type(1,0,0)),
-      dx * ROT_SCALE, vec3_type(0,1,0));
+    tvec4<T, P> global_x_axis(1, 0, 0, 0);
+    tvec4<T, P> local_x_axis = _rot * global_x_axis;
+    /*cout << local_x_axis.x << ", " << local_x_axis.y << ", " << local_x_axis.z 
+    << endl;*/
+    tvec4<T, P> global_y_axis(0, 1, 0, 0);
+    tvec4<T, P> local_y_axis = _rot * global_y_axis;
+    _rot = rotate(rotate(_rot, dy * ROT_SCALE, vec3_type(local_x_axis)),
+      dx * ROT_SCALE, vec3_type(local_y_axis));
   }
   virtual void doRoll(T dz)
   {
@@ -127,8 +133,11 @@ public:
   typedef tvec4<T,P> vec4_type;
   typedef tmat4x4<T,P> mat4_type;
 
-  QuatCamera(vec3_type eye = vec3_type(0,0,0))
-    : Camera<T,P>(eye) {}
+  QuatCamera(vec3_type eye = vec3_type(0,0,0)):
+    Camera<T,P>(eye),
+    _quat()
+  {}
+
   virtual void mouseLook(T dx,T dy)
   {
     _quat = _quat * (angleAxis(dx * ROT_SCALE, vec3_type(0,1,0)) *

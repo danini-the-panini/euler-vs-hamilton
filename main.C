@@ -1,5 +1,13 @@
 #include "main.h"
 
+void doKeys(GLFWwindow* w)
+{
+    if (glfwGetKey(w, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        exit(0);
+    }
+}
+
 void mainLoop()
 {
   glfwGetFramebufferSize(window, &width, &height);
@@ -156,25 +164,28 @@ void loadGeometry()
   glUniformMatrix4fv(world_location, 1, GL_FALSE, value_ptr(world));
 }
 
-void mouseMoved(GLFWwindow* window, double x, double y)
+void mouseMoved(GLFWwindow* w, double x, double y)
 {
-  if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
+  static bool reference = false;
+
+  if (glfwGetMouseButton(w, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
   {
-    if (mx != -1 && my != -1)
+    if (reference)
     {
       double dx = x - mx;
       double dy = y - my;
 
-      rcamf->mouseLook(dx,dy);
-      qcamf->mouseLook(dx,dy);
+      rcamf->mouseLook((float)dx,(float)dy);
+      qcamf->mouseLook((float)dx,(float)dy);
 
       rcamd->mouseLook(dx,dy);
       qcamd->mouseLook(dx,dy);
     }
 
     mx = x; my = y;
+    reference = true;
   }
-  else mx = my = -1;
+  else reference = false;
 }
 
 double getDifference(Camera<float>* camf, Camera<double>* camd)

@@ -5,9 +5,9 @@
 #include "camera.h"
 #include "shader.h"
 
-const float fovy = 45.f;
-const float near = 1.f;
-const float far = -100.f;
+const float FOVY = 45.f;
+const float NEAR = 1.f;
+const float FAR = -100.f;
 
 const GLuint VERTEX_SIZE = 3;
 const GLuint NUM_VERTICES = 4;
@@ -50,20 +50,23 @@ void mouseMoved(GLFWwindow* window, double x, double y);
 
 double getDifference(Camera<float>* camf, Camera<double>* camd);
 
-template <typename T>
-void drawQuarter(int top, int left, int width, int height, Camera<T>* cam)
-{
-  glViewport(top, left, width, height);
+void doKeys(GLFWwindow* w);
 
-  float ratio = (float) width / (float) height;
-  mat4 view = cam->getView();
-  mat4 projection = perspective(fovy, ratio, near, far);
+template <typename T>
+void drawQuarter(int top, int left, int w, int h, Camera<T>* cam)
+{
+  glViewport(top, left, w, h);
+
+  float ratio = (float) w / (float) h;
+  mat4 view(cam->getView());
+  mat4 projection = perspective(FOVY, ratio, NEAR, FAR);
 
   glUniformMatrix4fv(view_location, 1, GL_FALSE, value_ptr(view));
   glUniformMatrix4fv(projection_location, 1, GL_FALSE, value_ptr(projection));
 
   glDrawElements(GL_TRIANGLES, (GLsizei)INDEX_ARRAY_SIZE, GL_UNSIGNED_INT, 0);
 
+  doKeys(window);
   cam->doKeys(window);
 }
 
