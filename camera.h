@@ -47,39 +47,34 @@ public:
     r_out = normalize((vec3_type)(rot * vec4_type(1,0,0,0)).xyz());
   }
   virtual mat4_type getMat() const = 0;
-  void doKeys(GLFWwindow* w)
+  void doKey(int key)
   {
-    if (glfwGetKey(w, GLFW_KEY_W) == GLFW_PRESS)
+    switch(key)
     {
-      move(vec3_type(0,0,MOVE_AMOUNT));
-    }
-    else if (glfwGetKey(w, GLFW_KEY_S) == GLFW_PRESS)
-    {
-      move(vec3_type(0,0,-MOVE_AMOUNT));
-    }
-    if (glfwGetKey(w, GLFW_KEY_A) == GLFW_PRESS)
-    {
-      move(vec3_type(-MOVE_AMOUNT,0,0));
-    }
-    else if (glfwGetKey(w, GLFW_KEY_D) == GLFW_PRESS)
-    {
-      move(vec3_type(MOVE_AMOUNT,0,0));
-    }
-    if (glfwGetKey(w, GLFW_KEY_SPACE) == GLFW_PRESS)
-    {
-      move(vec3_type(0,MOVE_AMOUNT,0));
-    }
-    else if (glfwGetKey(w, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-    {
-      move(vec3_type(0,-MOVE_AMOUNT,0));
-    }
-    if (glfwGetKey(w, GLFW_KEY_Q) == GLFW_PRESS)
-    {
-      doRoll(-1);
-    }
-    else if (glfwGetKey(w, GLFW_KEY_E) == GLFW_PRESS)
-    {
-      doRoll(1);
+      case GLFW_KEY_W:
+        move(vec3_type(0,0,MOVE_AMOUNT));
+        break;
+      case GLFW_KEY_S:
+        move(vec3_type(0,0,-MOVE_AMOUNT));
+        break;
+      case GLFW_KEY_A:
+        move(vec3_type(-MOVE_AMOUNT,0,0));
+        break;
+      case GLFW_KEY_D:
+        move(vec3_type(MOVE_AMOUNT,0,0));
+        break;
+      case GLFW_KEY_SPACE:
+        move(vec3_type(0,MOVE_AMOUNT,0));
+        break;
+      case GLFW_KEY_LEFT_CONTROL:
+        move(vec3_type(0,-MOVE_AMOUNT,0));
+        break;
+      case GLFW_KEY_Q:
+        doRoll(-1);
+        break;
+      case GLFW_KEY_E:
+        doRoll(1);
+        break;
     }
   }
 protected:

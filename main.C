@@ -1,24 +1,67 @@
 #include "main.h"
 
-void doKeys(GLFWwindow* w)
+void doKeys()
 {
-  if (glfwGetKey(w, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
   {
     glfwSetWindowShouldClose(window, GL_TRUE);
   }
+
+  double x, y;
+  if (is_reading)
+  {
+    input_file >> mouse_ready >> x >> y;
+  }
+  else
+  {
+    glfwGetCursorPos(window, &x, &y);
+
+    if (is_writing)
+      output_file << mouse_ready << " " << x << " " << y << " ";
+  }
+  mouseMoved(x, y);
+
+  if (!is_reading)
+  {
+    for (unsigned i = 0; i < sizeof(KEYS)/sizeof(int); i++)
+    {
+      if (glfwGetKey(window, KEYS[i]) == GLFW_PRESS)
+      {
+        doKeyToCameras(KEYS[i]);
+
+        if (is_writing)
+          output_file << KEYS[i] << " ";
+      }
+    }
+
+    if (is_writing)
+      output_file << "-1 ";
+
+  } else
+  {
+    int key;
+    input_file >> key;
+    while (key != -1)
+    {
+      doKeyToCameras(key);
+      input_file >> key;
+    }
+  }
+  if (input_file.eof())
+    glfwSetWindowShouldClose(window, GL_TRUE);
+}
+
+void doKeyToCameras(int key)
+{
+  rcamf->doKey(key);
+  rcamd->doKey(key);
+  qcamf->doKey(key);
+  qcamd->doKey(key);
 }
 
 void mainLoop()
 {
-  if (is_reading)
-  {
-    double x, y;
-    input_file >> x >> y;
-    mouseMoved(window, x, y);
-
-    if (input_file.eof())
-      glfwSetWindowShouldClose(window, GL_TRUE);
-  }
+  doKeys();
 
   glfwGetFramebufferSize(window, &width, &height);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -38,8 +81,6 @@ void mainLoop()
 
   cout.precision(15);
   cout << std::fixed << rdiff << ", " << qdiff << endl;
-
-  doKeys(window);
 
   /* Swap front and back buffers */
   glfwSwapBuffers(window);
@@ -68,7 +109,7 @@ void init()
   initGlew();
 
   if (!is_reading)
-    glfwSetCursorPosCallback(window, mouseMoved);
+    glfwSetCursorPosCallback(window, mouseCheck);
 
   glEnable(GL_VERTEX_ARRAY);
   glEnable(GL_DEPTH_TEST);
@@ -177,14 +218,20 @@ void loadGeometry()
   glUniformMatrix4fv(world_location, 1, GL_FALSE, value_ptr(world));
 }
 
-void mouseMoved(GLFWwindow*, double x, double y)
+void mouseCheck(GLFWwindow*,double x,double y)
 {
-  static bool reference = false;
+  if (!mouse_ready)
+  {
+    mouse_ready = true;
+    mx = x; my = y;
 
-  if (is_writing)
-    output_file << x << " " << y << " ";
-
-  if (reference)
+    if (is_writing)
+      output_file << "0 " << mx << " " << my << " -1 ";
+  }
+}
+void mouseMoved(double x, double y)
+{
+  if (mouse_ready)
   {
     double dx = x - mx;
     double dy = y - my;
@@ -197,7 +244,6 @@ void mouseMoved(GLFWwindow*, double x, double y)
   }
 
   mx = x; my = y;
-  reference = true;
 }
 
 double getDifference(Camera<float>* camf, Camera<double>* camd)
@@ -219,8 +265,6 @@ double getDifference(Camera<float>* camf, Camera<double>* camd)
 
 void handleArguments(int argc, char ** argv)
 {
-  char * infile = NULL;
-  char * outfile = NULL;
   for (int i = 1; i < argc; i++)
   {
     if (strcmp(argv[i], "-i") == 0)
