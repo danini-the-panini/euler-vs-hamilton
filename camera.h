@@ -107,7 +107,7 @@ public:
   }
   virtual void doRoll(T dz)
   {
-    _rot = rotate(_rot, -dz * ROLL_AMOUNT, vec3_type(0,0,1));
+    _rot = orthonormalise(rotate(_rot, -dz * ROLL_AMOUNT, vec3_type(0,0,1)));
   }
   virtual mat4_type getMat() const
   {
