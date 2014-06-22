@@ -13,6 +13,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <iostream>
 
 using glm::angleAxis;
@@ -32,6 +33,7 @@ using glm::perspective;
 using glm::precision;
 using glm::rotate;
 using glm::row;
+using glm::to_string;
 using glm::translate;
 using glm::scale;
 using glm::mat4_cast;

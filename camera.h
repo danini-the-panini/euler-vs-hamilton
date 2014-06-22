@@ -106,15 +106,18 @@ public:
   }
   virtual void mouseLook(T dx, T dy)
   {
-    _f = normalize((rotate(rotate(mat4_type(1), dx * ROT_SCALE, _u),
-          dy * ROT_SCALE, _s) * vec4_type(_f, 0)).xyz());
-    _s = normalize(cross(_u,_f));
-    _u = normalize(_f,_s);
+    auto rot_x = rotate(mat4_type(1), dx * ROT_SCALE, _u);
+    auto rot_y = rotate(mat4_type(1), dy * ROT_SCALE, _s);
+    _f = normalize((rot_x * rot_y * vec4_type(_f, 0)).xyz());
+    _s = normalize((rot_x * vec4_type(_s, 0)).xyz());
+    _u = normalize((rot_y * vec4_type(_u, 0)).xyz());
+    cout << to_string(_u) << endl;
   }
   virtual void doRoll(T dz)
   {
-    _u = normalize((rotate(mat4_type(1), dz * ROT_SCALE, _f) * vec4_type(_u, 0)).xyz());
-    _s = normalize(cross(_u,_f));
+    auto rot = rotate(mat4_type(1), dz * ROLL_AMOUNT, _f);
+    _u = normalize((rot * vec4_type(_u, 0)).xyz());
+    _s = normalize((rot * vec4_type(_s, 0)).xyz());
   }
   virtual mat4_type getMat() const
   {
@@ -174,8 +177,8 @@ public:
     : Camera<T,P>(eye), _rot(mat4_type(1)) {}
   virtual void mouseLook(T dx, T dy)
   {
-    _rot = rotate(rotate(_rot, dy * ROT_SCALE, vec3_type(1,0,0)),
-        dx * ROT_SCALE, vec3_type(0,1,0));
+    _rot = rotate(rotate(_rot, dx * ROT_SCALE, vec3_type(0,1,0)),
+        dy * ROT_SCALE, vec3_type(1,0,0));
     _rot = orthonormalise_gram_schmidt(_rot);
   }
   virtual void doRoll(T dz)
