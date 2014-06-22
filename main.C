@@ -41,16 +41,18 @@ void handleInput()
   int key;
   if (is_reading)
   {
-    input_file >> mouse_ready >> x >> y;
-    checkInputFile();
+    if (!(input_file >> mouse_ready))
+    {
+      glfwSetWindowShouldClose(window, GL_TRUE);
+      return;
+    }
+    input_file >> x >> y;
 
     input_file >> key;
-    checkInputFile();
     while (key != -1)
     {
       doKeyToCameras(key);
       input_file >> key;
-      checkInputFile();
     }
   }
   else
@@ -112,12 +114,6 @@ void mouseMoved(double x, double y)
   }
 
   mx = x; my = y;
-}
-
-void checkInputFile()
-{
-  if (input_file.eof())
-    glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
 void initGlfw()
