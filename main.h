@@ -44,13 +44,27 @@ Camera<double>
   *rcamd = new RotMatCamera<double>(INITIAL_EYE_D),
   *qcamd = new QuatCamera<double>(INITIAL_EYE_D);
 
-double mx = -1, my = -1;
+ifstream input_file;
+ofstream output_file;
 
-void mouseMoved(GLFWwindow* window, double x, double y);
+const int KEYS[] = {GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_A, GLFW_KEY_D,
+  GLFW_KEY_SPACE, GLFW_KEY_LEFT_CONTROL, GLFW_KEY_E, GLFW_KEY_Q};
+
+bool is_writing = false, is_reading = false;
+
+bool mouse_ready = false;
+double mx, my;
+
+void handleArguments(int argc, char ** argv);
+
+void mouseMoved(double x, double y);
+void mouseCheck(GLFWwindow*,double,double);
 
 double getDifference(Camera<float>* camf, Camera<double>* camd);
 
-void doKeys(GLFWwindow* w);
+void handleInput();
+void doKeyToCameras(int key);
+void checkInputFile();
 
 template <typename T>
 void drawQuarter(int top, int left, int w, int h, Camera<T>* cam)
@@ -65,9 +79,6 @@ void drawQuarter(int top, int left, int w, int h, Camera<T>* cam)
   glUniformMatrix4fv(projection_location, 1, GL_FALSE, value_ptr(projection));
 
   glDrawElements(GL_TRIANGLES, (GLsizei)INDEX_ARRAY_SIZE, GL_UNSIGNED_INT, 0);
-
-  doKeys(window);
-  cam->doKeys(window);
 }
 
 void init();
