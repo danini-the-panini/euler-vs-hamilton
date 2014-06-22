@@ -36,37 +36,37 @@ public:
     r_out = normalize((tvec3<T,highp>)(rot * tvec4<T,highp>(MOVE_AMOUNT,0,0,0)).xyz());
   }
   virtual tmat4x4<T,highp> getMat() const = 0;
-  void doKeys(GLFWwindow* window)
+  void doKeys(GLFWwindow* w)
   {
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(w, GLFW_KEY_W) == GLFW_PRESS)
     {
       move(tvec3<T,highp>(0,0,1));
     }
-    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    else if (glfwGetKey(w, GLFW_KEY_S) == GLFW_PRESS)
     {
       move(tvec3<T,highp>(0,0,-1));
     }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    if (glfwGetKey(w, GLFW_KEY_A) == GLFW_PRESS)
     {
       move(tvec3<T,highp>(1,0,0));
     }
-    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    else if (glfwGetKey(w, GLFW_KEY_D) == GLFW_PRESS)
     {
       move(tvec3<T,highp>(-1,0,0));
     }
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    if (glfwGetKey(w, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
       move(tvec3<T,highp>(0,1,0));
     }
-    else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+    else if (glfwGetKey(w, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
     {
       move(tvec3<T,highp>(0,-1,0));
     }
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+    if (glfwGetKey(w, GLFW_KEY_Q) == GLFW_PRESS)
     {
       doRoll(-1);
     }
-    else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+    else if (glfwGetKey(w, GLFW_KEY_E) == GLFW_PRESS)
     {
       doRoll(1);
     }
@@ -98,6 +98,11 @@ template <typename T>
 class QuatCamera : public Camera<T>
 {
 public:
+  QuatCamera():
+    quat()
+  {
+  }
+
   tquat<T,highp> quat;
   virtual void mouseLook(T dx,T dy)
   {
