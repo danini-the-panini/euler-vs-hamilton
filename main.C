@@ -2,25 +2,32 @@
 
 void doKeys(GLFWwindow* w)
 {
-    if (glfwGetKey(w, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    {
-        exit(0);
-    }
+  if (glfwGetKey(w, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+  {
+    glfwSetWindowShouldClose(window, GL_TRUE);
+  }
 }
 
 void mainLoop()
 {
+  if (is_reading)
+  {
+    double x, y;
+    input_file >> x >> y;
+    mouseMoved(window, x, y);
+  }
+
   glfwGetFramebufferSize(window, &width, &height);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  // top-left: Euler Camera (float)
+  // bottom-left: Euler Camera (float)
   drawQuarter(0, 0, width/2, height/2, rcamf);
-  // top-right: Euler Camera (double)
+  // bottom-right: Euler Camera (double)
   drawQuarter(width/2, 0, width/2, height/2, rcamd);
 
-  // bottom-left: Quaternion Camera (float)
+  // top-left: Quaternion Camera (float)
   drawQuarter(0, height/2, width/2, height/2, qcamf);
-  // bottom-right: Quaternion Camera (double)
+  // top-right: Quaternion Camera (double)
   drawQuarter(width/2, height/2, width/2, height/2, qcamd);
 
   double rdiff = getDifference(rcamf, rcamd);
@@ -28,6 +35,8 @@ void mainLoop()
 
   cout.precision(15);
   cout << std::fixed << rdiff << ", " << qdiff << endl;
+
+  doKeys(window);
 
   /* Swap front and back buffers */
   glfwSwapBuffers(window);
@@ -55,7 +64,8 @@ void init()
   initWindow();
   initGlew();
 
-  glfwSetCursorPosCallback(window, mouseMoved);
+  if (!is_reading)
+    glfwSetCursorPosCallback(window, mouseMoved);
 
   glEnable(GL_VERTEX_ARRAY);
   glEnable(GL_DEPTH_TEST);
@@ -164,28 +174,27 @@ void loadGeometry()
   glUniformMatrix4fv(world_location, 1, GL_FALSE, value_ptr(world));
 }
 
-void mouseMoved(GLFWwindow* w, double x, double y)
+void mouseMoved(GLFWwindow*, double x, double y)
 {
   static bool reference = false;
 
-  if (glfwGetMouseButton(w, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
+  if (is_writing)
+    output_file << x << " " << y << " ";
+
+  if (reference)
   {
-    if (reference)
-    {
-      double dx = x - mx;
-      double dy = y - my;
+    double dx = x - mx;
+    double dy = y - my;
 
-      rcamf->mouseLook((float)dx,(float)dy);
-      qcamf->mouseLook((float)dx,(float)dy);
+    rcamf->mouseLook((float)dx,(float)dy);
+    qcamf->mouseLook((float)dx,(float)dy);
 
-      rcamd->mouseLook(dx,dy);
-      qcamd->mouseLook(dx,dy);
-    }
-
-    mx = x; my = y;
-    reference = true;
+    rcamd->mouseLook(dx,dy);
+    qcamd->mouseLook(dx,dy);
   }
-  else reference = false;
+
+  mx = x; my = y;
+  reference = true;
 }
 
 double getDifference(Camera<float>* camf, Camera<double>* camd)
@@ -205,8 +214,31 @@ double getDifference(Camera<float>* camf, Camera<double>* camd)
   return diff/16.0;
 }
 
-int main(/*int argc, char ** argv*/)
+void handleArguments(int argc, char ** argv)
 {
+  char * infile = NULL;
+  char * outfile = NULL;
+  for (int i = 1; i < argc; i++)
+  {
+    if (strcmp(argv[i], "-i") == 0)
+    {
+      i++;
+      input_file.open(argv[i]);
+      is_reading = true;
+    }
+    else if (strcmp(argv[i], "-o") == 0)
+    {
+      i++;
+      output_file.open(argv[i]);
+      is_writing = true;
+    }
+  }
+}
+
+int main(int argc, char ** argv)
+{
+  handleArguments(argc, argv);
+
   init();
 
   loadShaders();
@@ -222,6 +254,9 @@ int main(/*int argc, char ** argv*/)
   }
 
   glfwTerminate();
+
+  input_file.close();
+  output_file.close();
 
   return 0;
 }

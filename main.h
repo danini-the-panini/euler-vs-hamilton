@@ -44,7 +44,14 @@ Camera<double>
   *rcamd = new RotMatCamera<double>(INITIAL_EYE_D),
   *qcamd = new QuatCamera<double>(INITIAL_EYE_D);
 
+ifstream input_file;
+ofstream output_file;
+
+bool is_writing = false, is_reading = false;
+
 double mx = -1, my = -1;
+
+void handleArguments(int argc, char ** argv);
 
 void mouseMoved(GLFWwindow* window, double x, double y);
 
@@ -66,7 +73,6 @@ void drawQuarter(int top, int left, int w, int h, Camera<T>* cam)
 
   glDrawElements(GL_TRIANGLES, (GLsizei)INDEX_ARRAY_SIZE, GL_UNSIGNED_INT, 0);
 
-  doKeys(window);
   cam->doKeys(window);
 }
 

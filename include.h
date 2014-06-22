@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <fstream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #define GLM_SWIZZLE
@@ -38,5 +39,7 @@ using glm::vec4;
 using std::cerr;
 using std::cout;
 using std::endl;
+using std::ifstream;
+using std::ofstream;
 
 #endif
