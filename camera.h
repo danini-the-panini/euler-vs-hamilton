@@ -97,12 +97,14 @@ public:
     : Camera<T,P>(eye), _rot(mat4_type(1)) {}
   virtual void mouseLook(T dx, T dy)
   {
-    _rot = orthonormalise(rotate(rotate(_rot, dy * ROT_SCALE, vec3_type(1,0,0)),
-      dx * ROT_SCALE, vec3_type(0,1,0)));
+    _rot = rotate(rotate(_rot, dy * ROT_SCALE, vec3_type(1,0,0)),
+           dx * ROT_SCALE, vec3_type(0,1,0));
+    _rot = orthonormalise_gram_schmidt(_rot);
   }
   virtual void doRoll(T dz)
   {
-    _rot = orthonormalise(rotate(_rot, -dz * ROLL_AMOUNT, vec3_type(0,0,1)));
+    _rot = rotate(_rot, -dz * ROLL_AMOUNT, vec3_type(0,0,1));
+    _rot = orthonormalise_gram_schmidt(_rot);
   }
   virtual mat4_type getMat() const
   {
