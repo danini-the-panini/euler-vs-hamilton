@@ -21,6 +21,9 @@
 *.app
 main
 
+# stuff
+*.dSYM
+
 # LaTeX Cruft
 main.pdf
 main-blx.bib
