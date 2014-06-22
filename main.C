@@ -1,5 +1,13 @@
 #include "main.h"
 
+void doKeys(GLFWwindow* w)
+{
+    if (glfwGetKey(w, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        exit(0);
+    }
+}
+
 void mainLoop()
 {
   glfwGetFramebufferSize(window, &width, &height);

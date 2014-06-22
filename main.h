@@ -50,6 +50,8 @@ void mouseMoved(GLFWwindow* window, double x, double y);
 
 double getDifference(Camera<float>* camf, Camera<double>* camd);
 
+void doKeys(GLFWwindow* w);
+
 template <typename T>
 void drawQuarter(int top, int left, int w, int h, Camera<T>* cam)
 {
@@ -64,6 +66,7 @@ void drawQuarter(int top, int left, int w, int h, Camera<T>* cam)
 
   glDrawElements(GL_TRIANGLES, (GLsizei)INDEX_ARRAY_SIZE, GL_UNSIGNED_INT, 0);
 
+  doKeys(window);
   cam->doKeys(window);
 }
 
