@@ -139,7 +139,10 @@ void init()
 
   if (!is_reading)
   {
+// Because GLFW refuses to keep up with APPLE!
+#ifndef __APPLE__
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+#endif
     glfwSetCursorPosCallback(window, mouseCheck);
   }
 
