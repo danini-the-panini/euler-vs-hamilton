@@ -20,6 +20,7 @@ public:
   Camera(vec3_type eye = vec3_type(0,0,0))
     : _eye(eye), time_spent(0.0)
   {}
+  virtual ~Camera() {}
   virtual mat4_type getView()
   {
     vec3_type up, fwd, r;

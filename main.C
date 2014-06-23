@@ -7,22 +7,23 @@ void mainLoop()
   glfwGetFramebufferSize(window, &width, &height);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  // bottom-left: Euler Camera (float)
-  drawQuarter(0, 0, width/2, height/2, rcamf);
-  // bottom-right: Euler Camera (double)
-  drawQuarter(width/2, 0, width/2, height/2, rcamd);
-
-  // top-left: Quaternion Camera (float)
-  drawQuarter(0, height/2, width/2, height/2, qcamf);
-  // top-right: Quaternion Camera (double)
-  drawQuarter(width/2, height/2, width/2, height/2, qcamd);
-
-  double rdiff = getDifference(rcamf, rcamd);
-  double qdiff = getDifference(qcamf, qcamd);
+  int cam_height = height/(int)N_CAMS;
+  for (unsigned i = 0; i < N_CAMS; i++)
+  {
+    drawQuarter(0, cam_height*(int)i, width/2, cam_height, camfs[i]);
+    drawQuarter(width/2, cam_height*(int)i, width/2, cam_height, camds[i]);
+  }
 
   cout.precision(15);
-  cout << std::fixed << rdiff << ", " << qdiff <<
-    ", " << rcamd->getTimeSpent() << ", " << qcamd->getTimeSpent() << endl;
+  for (unsigned i = 0; i < N_CAMS; i++)
+  {
+    cout << std::fixed << getDifference(camfs[i], camds[i]) << ", ";
+  }
+  for (unsigned i = 0; i < N_CAMS; i++)
+  {
+    cout << std::fixed << camds[i]->getTimeSpent() << ", ";
+  }
+  cout << endl;
 
   /* Swap front and back buffers */
   glfwSwapBuffers(window);
@@ -81,10 +82,11 @@ void handleInput()
 
 void doKeyToCameras(int key)
 {
-  rcamf->doKey(key);
-  rcamd->doKey(key);
-  qcamf->doKey(key);
-  qcamd->doKey(key);
+  for (unsigned i = 0; i < N_CAMS; i++)
+  {
+    camfs[i]->doKey(key);
+    camds[i]->doKey(key);
+  }
 }
 
 void mouseCheck(GLFWwindow*,double x,double y)
@@ -106,11 +108,11 @@ void mouseMoved(double x, double y)
     double dx = x - mx;
     double dy = y - my;
 
-    rcamf->mouseLook((float)dx,(float)dy);
-    qcamf->mouseLook((float)dx,(float)dy);
-
-    rcamd->mouseLook(dx,dy);
-    qcamd->mouseLook(dx,dy);
+    for (unsigned i = 0; i < N_CAMS; i++)
+    {
+      camfs[i]->mouseLook((float)dx,(float)dy);
+      camds[i]->mouseLook(dx,dy);
+    }
   }
 
   mx = x; my = y;
@@ -299,8 +301,6 @@ int main(int argc, char ** argv)
 
   loadGeometry();
 
-  cout << ("Euler, Quaternion") << endl;
-
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window))
   {
@@ -311,6 +311,12 @@ int main(int argc, char ** argv)
 
   input_file.close();
   output_file.close();
+
+  for (unsigned i = 0; i < N_CAMS; i++)
+  {
+    delete camfs[i];
+    delete camds[i];
+  }
 
   return 0;
 }

@@ -40,12 +40,19 @@ typedef Camera<double,highp> CamD;
 const CamF::vec3_type INITIAL_EYE_F(0,2,0);
 const CamD::vec3_type INITIAL_EYE_D(0,2,0);
 
-CamF
-  *rcamf = new RotMatCamera<float,lowp>(INITIAL_EYE_F),
-  *qcamf = new QuatCamera<float,lowp>(INITIAL_EYE_F);
-CamD
-  *rcamd = new RotMatCamera<double>(INITIAL_EYE_D),
-  *qcamd = new QuatCamera<double>(INITIAL_EYE_D);
+CamF *camfs[] = {
+  new RotMatCamera<float,lowp>(INITIAL_EYE_F),
+  new OrthoRotMatCamera<float,lowp>(INITIAL_EYE_F),
+  new QuatCamera<float,lowp>(INITIAL_EYE_F)
+};
+
+CamD *camds[] = {
+  new RotMatCamera<double>(INITIAL_EYE_D),
+  new OrthoRotMatCamera<double>(INITIAL_EYE_D),
+  new QuatCamera<double>(INITIAL_EYE_D)
+};
+
+const unsigned N_CAMS = (unsigned)sizeof(camfs)/(unsigned)sizeof(CamF*);
 
 ifstream input_file;
 ofstream output_file;
