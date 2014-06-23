@@ -275,7 +275,58 @@ public:
   {
     START_BENCH;
 
-    return mat4_cast(_quat);
+    return orthonormalise_gram_schmidt(mat4_cast(_quat));
+
+    END_BENCH;
+    this->time_spent += BENCH_RESULT;
+  }
+private:
+  tquat<T,P> _quat;
+};
+
+
+/**
+ * Camera implementation using orthonormalized Quaternion representation.
+ */
+template <typename T, precision P = highp>
+class OrthoQuatCamera : public Camera<T,P>
+{
+public:
+  typedef tvec3<T,P> vec3_type;
+  typedef tvec4<T,P> vec4_type;
+  typedef tmat4x4<T,P> mat4_type;
+
+  OrthoQuatCamera(vec3_type eye = vec3_type(0,0,0)):
+    Camera<T,P>(eye),
+    _quat()
+  {}
+
+  virtual void mouseLook(T dx,T dy)
+  {
+    START_BENCH;
+
+    _quat = _quat * (angleAxis(dx * ROT_SCALE, vec3_type(0,1,0)) *
+      angleAxis(dy * ROT_SCALE, vec3_type(1,0,0)));
+    _quat = normalize(_quat);
+
+    END_BENCH;
+    this->time_spent += BENCH_RESULT;
+  }
+  virtual void doRoll(T dz)
+  {
+    START_BENCH;
+
+    _quat = _quat * angleAxis(-dz * ROLL_AMOUNT, vec3_type(0,0,1));
+    _quat = normalize(_quat);
+
+    END_BENCH;
+    this->time_spent += BENCH_RESULT;
+  }
+  virtual mat4_type getMat()
+  {
+    START_BENCH;
+
+    return orthonormalise_gram_schmidt(mat4_cast(_quat));
 
     END_BENCH;
     this->time_spent += BENCH_RESULT;
