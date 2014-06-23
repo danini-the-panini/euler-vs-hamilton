@@ -20,7 +20,7 @@ public:
   Camera(vec3_type eye = vec3_type(0,0,0))
     : _eye(eye), time_spent(0.0)
   {}
-  virtual mat4_type getView() const
+  virtual mat4_type getView()
   {
     vec3_type up, fwd, r;
     cameraAxes(up, fwd, r);
@@ -41,14 +41,14 @@ public:
     _eye += r * t.x + up * t.y + fwd * t.z;
   }
   void cameraAxes(vec3_type& up_out, vec3_type& fwd_out,
-    vec3_type& r_out) const
+    vec3_type& r_out)
   {
     mat4_type rot = getMat();
     up_out = normalize((vec3_type)(rot * vec4_type(0,1,0,0)).xyz());
     fwd_out = normalize((vec3_type)(rot * vec4_type(0,0,1,0)).xyz());
     r_out = normalize((vec3_type)(rot * vec4_type(1,0,0,0)).xyz());
   }
-  virtual mat4_type getMat() const = 0;
+  virtual mat4_type getMat() = 0;
   void doKey(int key)
   {
     switch(key)
@@ -122,7 +122,7 @@ public:
     cout << to_string(_u) << endl;
 
     END_BENCH;
-    this->time_spent = BENCH_RESULT;
+    this->time_spent += BENCH_RESULT;
   }
   virtual void doRoll(T dz)
   {
@@ -133,9 +133,9 @@ public:
     _s = normalize((rot * vec4_type(_s, 0)).xyz());
 
     END_BENCH;
-    this->time_spent = BENCH_RESULT;
+    this->time_spent += BENCH_RESULT;
   }
-  virtual mat4_type getMat() const
+  virtual mat4_type getMat()
   {
     return mat4_type (
       _s.x, _u.x, -_f.x, .0f,
@@ -169,7 +169,7 @@ public:
         dy * ROT_SCALE, vec3_type(1,0,0));
 
     END_BENCH;
-    this->time_spent = BENCH_RESULT;
+    this->time_spent += BENCH_RESULT;
   }
   virtual void doRoll(T dz)
   {
@@ -178,9 +178,9 @@ public:
     _rot = rotate(_rot, -dz * ROLL_AMOUNT, vec3_type(0,0,1));
 
     END_BENCH;
-    this->time_spent = BENCH_RESULT;
+    this->time_spent += BENCH_RESULT;
   }
-  virtual mat4_type getMat() const
+  virtual mat4_type getMat()
   {
     return _rot;
   }
@@ -210,7 +210,7 @@ public:
     _rot = orthonormalise_gram_schmidt(_rot);
 
     END_BENCH;
-    this->time_spent = BENCH_RESULT;
+    this->time_spent += BENCH_RESULT;
   }
   virtual void doRoll(T dz)
   {
@@ -220,9 +220,9 @@ public:
     _rot = orthonormalise_gram_schmidt(_rot);
 
     END_BENCH;
-    this->time_spent = BENCH_RESULT;
+    this->time_spent += BENCH_RESULT;
   }
-  virtual mat4_type getMat() const
+  virtual mat4_type getMat()
   {
     return _rot;
   }
@@ -255,7 +255,7 @@ public:
     _quat = normalize(_quat);
 
     END_BENCH;
-    this->time_spent = BENCH_RESULT;
+    this->time_spent += BENCH_RESULT;
   }
   virtual void doRoll(T dz)
   {
@@ -265,11 +265,16 @@ public:
     _quat = normalize(_quat);
 
     END_BENCH;
-    this->time_spent = BENCH_RESULT;
+    this->time_spent += BENCH_RESULT;
   }
-  virtual mat4_type getMat() const
+  virtual mat4_type getMat()
   {
+    START_BENCH;
+
     return mat4_cast(_quat);
+
+    END_BENCH;
+    this->time_spent += BENCH_RESULT;
   }
 private:
   tquat<T,P> _quat;
