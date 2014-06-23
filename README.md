@@ -25,6 +25,6 @@ The script `calculate_wins.rb` takes in the input from a run and outputs the num
 
 The scripts plot_stability and plot_timing can be fed into [gnuplot]() to generate plots of error and timing respectively. Use a plot script as follows:
 
-    gnuplot -e '-e "IN_FILE"' > OUT_FILE
+    gnuplot -e '-e "IN_FILE"' PLOT_SCRIPT > OUT_FILE
 
 Some example input and corresponding output can be found under `tests`. Please note that output will vary between executions and platforms.
