@@ -43,13 +43,15 @@ const CamD::vec3_type INITIAL_EYE_D(0,2,0);
 CamF *camfs[] = {
   new RotMatCamera<float,lowp>(INITIAL_EYE_F),
   new OrthoRotMatCamera<float,lowp>(INITIAL_EYE_F),
-  new QuatCamera<float,lowp>(INITIAL_EYE_F)
+  new QuatCamera<float,lowp>(INITIAL_EYE_F),
+  new OrthoQuatCamera<float,lowp>(INITIAL_EYE_F)
 };
 
 CamD *camds[] = {
   new RotMatCamera<double>(INITIAL_EYE_D),
   new OrthoRotMatCamera<double>(INITIAL_EYE_D),
-  new QuatCamera<double>(INITIAL_EYE_D)
+  new QuatCamera<double>(INITIAL_EYE_D),
+  new OrthoQuatCamera<double>(INITIAL_EYE_D)
 };
 
 const unsigned N_CAMS = (unsigned)sizeof(camfs)/(unsigned)sizeof(CamF*);
