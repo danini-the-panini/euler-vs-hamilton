@@ -122,7 +122,7 @@ public:
     cout << to_string(_u) << endl;
 
     END_BENCH;
-    this->time_spent += BENCH_RESULT;
+    this->time_spent = BENCH_RESULT;
   }
   virtual void doRoll(T dz)
   {
@@ -133,7 +133,7 @@ public:
     _s = normalize((rot * vec4_type(_s, 0)).xyz());
 
     END_BENCH;
-    this->time_spent += BENCH_RESULT;
+    this->time_spent = BENCH_RESULT;
   }
   virtual mat4_type getMat() const
   {
@@ -165,11 +165,11 @@ public:
   {
     START_BENCH;
 
-    _rot = rotate(rotate(_rot, dy * ROT_SCALE, vec3_type(1,0,0)),
-        dx * ROT_SCALE, vec3_type(0,1,0));
+    _rot = rotate(rotate(_rot, dx * ROT_SCALE, vec3_type(0,1,0)),
+        dy * ROT_SCALE, vec3_type(1,0,0));
 
     END_BENCH;
-    this->time_spent += BENCH_RESULT;
+    this->time_spent = BENCH_RESULT;
   }
   virtual void doRoll(T dz)
   {
@@ -178,7 +178,7 @@ public:
     _rot = rotate(_rot, -dz * ROLL_AMOUNT, vec3_type(0,0,1));
 
     END_BENCH;
-    this->time_spent += BENCH_RESULT;
+    this->time_spent = BENCH_RESULT;
   }
   virtual mat4_type getMat() const
   {
@@ -210,7 +210,7 @@ public:
     _rot = orthonormalise_gram_schmidt(_rot);
 
     END_BENCH;
-    this->time_spent += BENCH_RESULT;
+    this->time_spent = BENCH_RESULT;
   }
   virtual void doRoll(T dz)
   {
@@ -220,7 +220,7 @@ public:
     _rot = orthonormalise_gram_schmidt(_rot);
 
     END_BENCH;
-    this->time_spent += BENCH_RESULT;
+    this->time_spent = BENCH_RESULT;
   }
   virtual mat4_type getMat() const
   {
@@ -255,7 +255,7 @@ public:
     _quat = normalize(_quat);
 
     END_BENCH;
-    this->time_spent += BENCH_RESULT;
+    this->time_spent = BENCH_RESULT;
   }
   virtual void doRoll(T dz)
   {
@@ -265,7 +265,7 @@ public:
     _quat = normalize(_quat);
 
     END_BENCH;
-    this->time_spent += BENCH_RESULT;
+    this->time_spent = BENCH_RESULT;
   }
   virtual mat4_type getMat() const
   {

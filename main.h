@@ -41,10 +41,10 @@ const CamF::vec3_type INITIAL_EYE_F(0,2,0);
 const CamD::vec3_type INITIAL_EYE_D(0,2,0);
 
 CamF
-  *rcamf = new OrthoRotMatCamera<float,lowp>(INITIAL_EYE_F),
+  *rcamf = new RotMatCamera<float,lowp>(INITIAL_EYE_F),
   *qcamf = new QuatCamera<float,lowp>(INITIAL_EYE_F);
 CamD
-  *rcamd = new OrthoRotMatCamera<double>(INITIAL_EYE_D),
+  *rcamd = new RotMatCamera<double>(INITIAL_EYE_D),
   *qcamd = new QuatCamera<double>(INITIAL_EYE_D);
 
 ifstream input_file;
