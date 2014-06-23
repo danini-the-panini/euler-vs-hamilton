@@ -78,6 +78,9 @@ public:
       case GLFW_KEY_E:
         doRoll(1);
         break;
+      default:
+        // NO-OP
+        break;
     }
   }
   double getTimeSpent()
