@@ -3,6 +3,7 @@
 
 #include "include.h"
 #include "orthonormalise.h"
+#include "getcputime.h"
 
 const float ROT_SCALE = 0.00349f;
 const float ROLL_AMOUNT = .0349f;
@@ -17,7 +18,7 @@ public:
   typedef tmat4x4<T,P> mat4_type;
 
   Camera(vec3_type eye = vec3_type(0,0,0))
-    : _eye(eye)
+    : _eye(eye), time_spent(0.0)
   {}
   virtual mat4_type getView() const
   {
@@ -78,8 +79,13 @@ public:
         break;
     }
   }
+  double getTimeSpent()
+  {
+    return time_spent;
+  }
 protected:
   vec3_type _eye;
+  double time_spent;
 };
 
 /**
@@ -106,18 +112,28 @@ public:
   }
   virtual void mouseLook(T dx, T dy)
   {
+    START_BENCH;
+
     auto rot_x = rotate(mat4_type(1), dx * ROT_SCALE, _u);
     auto rot_y = rotate(mat4_type(1), dy * ROT_SCALE, _s);
     _f = normalize((rot_x * rot_y * vec4_type(_f, 0)).xyz());
     _s = normalize((rot_x * vec4_type(_s, 0)).xyz());
     _u = normalize((rot_y * vec4_type(_u, 0)).xyz());
     cout << to_string(_u) << endl;
+
+    END_BENCH;
+    this->time_spent += BENCH_RESULT;
   }
   virtual void doRoll(T dz)
   {
+    START_BENCH;
+
     auto rot = rotate(mat4_type(1), dz * ROLL_AMOUNT, _f);
     _u = normalize((rot * vec4_type(_u, 0)).xyz());
     _s = normalize((rot * vec4_type(_s, 0)).xyz());
+
+    END_BENCH;
+    this->time_spent += BENCH_RESULT;
   }
   virtual mat4_type getMat() const
   {
@@ -147,12 +163,22 @@ public:
     : Camera<T,P>(eye), _rot(mat4_type(1)) {}
   virtual void mouseLook(T dx, T dy)
   {
+    START_BENCH;
+
     _rot = rotate(rotate(_rot, dy * ROT_SCALE, vec3_type(1,0,0)),
         dx * ROT_SCALE, vec3_type(0,1,0));
+
+    END_BENCH;
+    this->time_spent += BENCH_RESULT;
   }
   virtual void doRoll(T dz)
   {
+    START_BENCH;
+
     _rot = rotate(_rot, -dz * ROLL_AMOUNT, vec3_type(0,0,1));
+
+    END_BENCH;
+    this->time_spent += BENCH_RESULT;
   }
   virtual mat4_type getMat() const
   {
@@ -177,14 +203,24 @@ public:
     : Camera<T,P>(eye), _rot(mat4_type(1)) {}
   virtual void mouseLook(T dx, T dy)
   {
+    START_BENCH;
+
     _rot = rotate(rotate(_rot, dx * ROT_SCALE, vec3_type(0,1,0)),
         dy * ROT_SCALE, vec3_type(1,0,0));
     _rot = orthonormalise_gram_schmidt(_rot);
+
+    END_BENCH;
+    this->time_spent += BENCH_RESULT;
   }
   virtual void doRoll(T dz)
   {
+    START_BENCH;
+
     _rot = rotate(_rot, -dz * ROLL_AMOUNT, vec3_type(0,0,1));
     _rot = orthonormalise_gram_schmidt(_rot);
+
+    END_BENCH;
+    this->time_spent += BENCH_RESULT;
   }
   virtual mat4_type getMat() const
   {
@@ -212,14 +248,24 @@ public:
 
   virtual void mouseLook(T dx,T dy)
   {
+    START_BENCH;
+
     _quat = _quat * (angleAxis(dx * ROT_SCALE, vec3_type(0,1,0)) *
       angleAxis(dy * ROT_SCALE, vec3_type(1,0,0)));
     _quat = normalize(_quat);
+
+    END_BENCH;
+    this->time_spent += BENCH_RESULT;
   }
   virtual void doRoll(T dz)
   {
+    START_BENCH;
+
     _quat = _quat * angleAxis(-dz * ROLL_AMOUNT, vec3_type(0,0,1));
     _quat = normalize(_quat);
+
+    END_BENCH;
+    this->time_spent += BENCH_RESULT;
   }
   virtual mat4_type getMat() const
   {

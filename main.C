@@ -1,6 +1,5 @@
 #include "main.h"
 
-
 void mainLoop()
 {
   handleInput();
@@ -22,7 +21,8 @@ void mainLoop()
   double qdiff = getDifference(qcamf, qcamd);
 
   cout.precision(15);
-  cout << std::fixed << rdiff << ", " << qdiff << endl;
+  cout << std::fixed << rdiff << ", " << qdiff <<
+    ", " << rcamd->getTimeSpent() << ", " << qcamd->getTimeSpent() << endl;
 
   /* Swap front and back buffers */
   glfwSwapBuffers(window);
