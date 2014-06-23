@@ -275,7 +275,7 @@ public:
   {
     START_BENCH;
 
-    return mat4_cast(_quat);
+    return orthonormalise_gram_schmidt(mat4_cast(_quat));
 
     END_BENCH;
     this->time_spent += BENCH_RESULT;
