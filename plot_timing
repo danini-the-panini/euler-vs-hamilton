@@ -1,0 +1,7 @@
+set terminal png size 1600,1200 enhanced font "Helvetica,20"
+
+plot filename using 5 title 'Rotation Matrix' with lines, \
+     filename using 6 title 'Orthonormalised Rotation Matrix' with lines, \
+     filename using 7 title 'Quaternion' with lines, \
+     filename using 8 title 'Orthonormalised Quaternion' with lines
+
