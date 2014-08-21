@@ -60,7 +60,7 @@ The contribution of this paper is then a conclusion as to this best possible par
 \section{Parameterisations}
 
 Several parameterisations of rotations in three dimensions have already been proposed.
-We recapitulate some of them here, for the uninitaited reader.
+We review some of them here, for the uninitaited reader.
 
 \subsection{Euler-Angle}
 
@@ -138,7 +138,7 @@ At the end of the test run, the algorithm with the most wins is deemed the most 
 
 Thirty tests of that were approximately one minute in length each were run, recording the victorious algorithm after each test has terminated.
 
-\section{Results} 
+\section{Results}
 
 We have reproduced some graphs detailing the numerical stability of the various algorithms over time for several of our experimental test runs in Figure \ref{fig:stability}.
 
@@ -199,7 +199,7 @@ In fact, ``OrthoRotMat'' only loses out in two out of thirty cases.
 The odds of obtaining this result at random (assuming the null hypothesis that all algorithms are equally stable) is $\left(\dfrac{1}{4}\right)^{28} \approx 1.39e^{-17}$.
 We therefore regard this result as significant.
 
-We typically observed that the orthnormalised rotation matrix and quaternion implementations remained at an error level around the $10^{-12}$ level, 
+We typically observed that the orthnormalised rotation matrix and quaternion implementations remained at an error level around the $10^{-12}$ level,
 The na\"{i}ve rotation matrix quickly exploded to the $10^{-10}$ level or even exceeded it.
 
 \subsection{Relative Performance}
