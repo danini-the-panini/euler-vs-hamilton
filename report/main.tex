@@ -194,9 +194,9 @@ The results of our numerical stability experiment is represented in the table be
 In Figure \ref{fig:wins}, ``RotMat'' represents the na\"{i}ve rotation matrix implementation. ``OrthoRotMat'' is the rotation matrix implementation that uses orthonormalisation, ``Quat'' is the quaternion implementation, and ``OrthoQuat'' is the quaternion implementation that uses orthnormalisation.
 
 It is an exception when the orthonormalised implementation is not superior for most of the run of an experiment.
-In fact, ``OrthoRotMat'' only loses out in two out of thirty cases.
+In fact, ``OrthoRotMat'' only loses out in three out of thirty cases.
 
-The odds of obtaining this result at random (assuming the null hypothesis that all algorithms are equally stable) is $\left(\dfrac{1}{4}\right)^{28} \approx 1.39e^{-17}$.
+The odds of obtaining this result at random (assuming the null hypothesis that all algorithms are equally stable) is $\left(\dfrac{1}{4}\right)^{27} \approx 5.55e^{-17}$.
 We therefore regard this result as significant.
 
 We typically observed that the orthnormalised rotation matrix and quaternion implementations remained at an error level around the $10^{-12}$ level,
