@@ -26,12 +26,12 @@ In addition, they are controlled by a user through use of the mouse and keyboard
 We investigate whether quaternions have the same numerical stability for this application area.
 Along the way, we note several interesting phenomena we perceived during the course of our research.
 
-In order to test this numerical stability, we compare the stability of our quaternion camera implementation against the implementation that has the best numerical stability that we know of --- the orthonormalised rotation matrix representation.
-This representation has some advantages.
-First, it is gimbal lock free (like quaternions), since there are no independent angles that can be rotated into one another's planes --- instead, the coordinate system as a whole rotates when the camera moves.
-Second, it is a very intuitive system for graphics programmers who are already very familiar with rotation matrices.
-Lastly, they are very stable numerically.
+In order to test this numerical stability, we compare the stability of our quaternion camera implementation against the orthonormalised rotation matrix representation.
+This representation has some advantages: gimbal lock freeness and numerical stability.
+This comparison was performed by implementing both algorithms and subjecting them to various test runs in order to see how many of these either is best at.
 
+The result of this comparison is somewhat surprising: the quaternion representation's strength is \emph{not} its numerical stability, but it's speed ---
+an orthonormalised rotation matrix representation is more stable, but also requires slightly more computation.
 We also offer empirical evidence of the performance increase that can be obtained by using quaternions instead of rotation matrices.
 
 \end{abstract}
@@ -101,7 +101,7 @@ The rest of this paper will attempt to replicate this numerical stability in the
 
 \section{Experimental Setup}
 
-Our experiment consists of an implementation of both competing methods of interactive camera control.
+Our experiment consists of an implementation of both competing methods of interactive camera control \footnote{This implementation, as well as all of our data can be found at \url{http://github.com/jellymann/euler-vs-hamilton/}}.
 The first implementation stores the current camera's orientation as a rotation matrix.
 This rotation matrix is then multiplied by rotation matrices that indicate the amount to rotate by whenever the camera's orientation is altered.
 The second implementation stores the current camera's orientation as a quaternion.
@@ -282,11 +282,6 @@ We suspect that this difference will only matter in situations where numerical s
 
 Finally, we have discovered that the Gram-Schmidt orthonormalisation that was used in this experiment has almost no cost associated with it, and indeed, sometimes saves computational time.
 The reason for this is likely related to compiler or central processing unit optimizations, but we leave further speculation on that front to future work.
-
-\section{Additional Materials}
-
-The full source code repository, as well as all collected data, will be released should the paper be accepted.
-For now, it has been removed to protect the anonymity of the researchers.
 
 \bibliographystyle{abbrv}
 \bibliography{main}
