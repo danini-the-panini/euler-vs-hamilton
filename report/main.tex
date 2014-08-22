@@ -27,7 +27,7 @@ We investigate whether quaternions have the same numerical stability for this ap
 Along the way, we note several interesting phenomena we perceived during the course of our research.
 
 In order to test this numerical stability, we compare the stability of our quaternion camera implementation against the orthonormalised rotation matrix representation.
-This representation has some advantages: gimbal lock freeness and numerical stability.
+This representation has some advantages: lack of gimbal lock and numerical stability.
 This comparison was performed by implementing both algorithms and subjecting them to various test runs in order to see how many of these either is best at.
 
 The result of this comparison is somewhat surprising: the quaternion representation's strength is \emph{not} its numerical stability, but it's speed ---
