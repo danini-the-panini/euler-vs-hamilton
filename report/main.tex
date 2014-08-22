@@ -133,36 +133,6 @@ Thirty tests of that were approximately one minute in length each were run, reco
 
 \section{Results}
 
-We have reproduced some graphs detailing the numerical stability of the various algorithms over time for several of our experimental test runs in Figure \ref{fig:stability}.
-
-Performance graphs can be found in Figure \ref{fig:performance}.
-
-\begin{figure}[htpb]
-\begin{framed}
-\includegraphics[width=8cm]{plots/stability_plot_21.png}
-\includegraphics[width=8cm]{plots/stability_plot_13.png}
-\includegraphics[width=8cm]{plots/stability_plot_28.png}
-\caption{In these graphs, the X axis indicates time, and the Y axis indicates the total accumulated error value.
-Test run 21 (top) indicates a case where quaternions performed relatively poorly in terms of numerical stability.
-Test run 13 (middle) illustrates a rare case where the orthonormalised rotation matrix numerical stability was sub par.
-Test run 28 (bottom) illustrates the poor stability of rotation matrices without orthonormalisation.}
-\label{fig:stability}
-\end{framed}
-\end{figure}
-
-\begin{figure}[htpb]
-\begin{framed}
-\includegraphics[width=8cm]{plots/timing_plot_1.png}
-\includegraphics[width=8cm]{plots/timing_plot_21.png}
-\includegraphics[width=8cm]{plots/timing_plot_22.png}
-\caption{In these graphs, the X axis indicates time, and the Y axis indicates the total time spent calculating view matrices by each algorithm.
-Test run 1 (top) is a typical performance profile.
-Test run 21 (middle) is curios, the orthonormalisation does not seem to cost anything for the rotation matrix.
-Test run 22 (bottom) is more anomolous, note that the orthonormalised rotation matrix is less expensive than the non-normalised version.}
-\label{fig:performance}
-\end{framed}
-\end{figure}
-
 In general, it was found that the orthonormalised rotation matrix performed the best in terms of numerical stability.
 This is discussed in subsection \ref{sec:stability}.
 
