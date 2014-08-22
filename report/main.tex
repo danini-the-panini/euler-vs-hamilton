@@ -13,7 +13,22 @@
 \usepackage{pgfplotstable}
 
 \title{Euler vs. Hamilton --- Investigating Claims of Quaternion Superiority for Rotation Parameterisation of Interactive 3D Camera Control Problems}
-\author{}
+\numberofauthors{2}
+\author
+{
+    \alignauthor
+    Jan CW Kroeze \\
+    \affaddr{University of Pretoria} \\
+    \affaddr{Lynnwood Road} \\
+    \affaddr{Pretoria} \\
+    \email{jkroeze@cs.up.ac.za}
+    \alignauthor
+    Daniel Smith \\
+    \affaddr{University of Pretoria} \\
+    \affaddr{Lynnwood Road} \\
+    \affaddr{Pretoria} \\
+    \email{jellymann@gmail.com}
+}
 \date{}
 
 \begin{document}
@@ -77,7 +92,6 @@ The magnitude of this rotation becomes the length of a vector with a direction t
 \subsection{Rotation Matrices}
 
 Rotation matrices represent rotations as the components of a $3 \times 3$ matrix of real vlaues.
-Rotation matrices are convenient because they work well with the well-established method of using matrices to represent affine transformations in computer graphics applications.
 Rotation matrices have to be kept orthonormal, if they deviate from this property then they will alter the length of vectors, leading to distortions in the shape of the objects being rotated \cite{diebel06}.
 
 \subsection{Quaternions}
