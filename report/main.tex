@@ -169,7 +169,13 @@ The na\"{i}ve rotation matrix quickly exploded to the $10^{-10}$ level or even e
 \label{sec:performance}
 
 One might expect that quaternions are somewhat slower than rotation matrices, since they need to be converted to a new format, and because the math describing them is somewhat complex.
-This turns out not to be the case, as the table in Figure \ref{fig:performance-table} will show (printed in Appendix A, due to formatting issues).
+This turns out not to be the case, as the table in Figure \ref{fig:performance-table} shows.
+
+\begin{figure}
+\csvautotabular{perfstats.csv}
+\caption{Time taken in microseconds per camera movement by each implementation.}
+\label{fig:performance-table}
+\end{figure}
 
 Two things are interesting from this table.
 First, the quaternion implementations are faster than the rotation matrix implementations.
@@ -284,18 +290,5 @@ For now, it has been removed to protect the anonymity of the researchers.
 
 \bibliographystyle{ACM-Reference-Format-Journals}
 \bibliography{main}
-
-\onecolumn
-\newpage
-
-\section*{Appendix A}
-
-\begin{figure}[h]
-\csvautotabular{performance.csv}
-\caption{Time taken to calculate the camera's view matrix for each algorithm during each test run.
-The times were produced by taking the total amount of time each algorithm spent on calculations, and dividing it by the total amount of times the mouse was moved.
-Times are in microseconds.}
-\label{fig:performance-table}
-\end{figure}
 
 \end{document}
