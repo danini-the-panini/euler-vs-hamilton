@@ -109,13 +109,6 @@ The quaternion is then multiplied by another quaternion that indicates the adjus
 We implement these camera algorithms as C++ templates and instantiate them with both single and double precision floating point types.
 Each implementation is also accompanied by a version that orthonormalises the rotation sub-matrix before it is sent to the shaders to be used as a view matrix.
 
-\begin{figure}
-\begin{framed}
-\includegraphics[width=8cm]{user_interface.png}
-\caption{The user interface for the test platform.}
-\end{framed}
-\end{figure}
-
 The user is now presented with a simple scene that contains some basic geometry to allow the user to orient him / herself.
 By moving the mouse, the user can rotate the camera about its X or Y axes.
 Keyboard controls allow the user to move the camera forward, back and to the left and right.
