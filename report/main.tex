@@ -101,7 +101,7 @@ The rest of this paper will attempt to replicate this numerical stability in the
 
 \section{Experimental Setup}
 
-Our experiment consists of an implementation of both competing methods of interactive camera control.
+Our experiment consists of an implementation of both competing methods of interactive camera control \footnote{This implementation, as well as all of our data can be found at \url{http://github.com/jellymann/euler-vs-hamilton/}}.
 The first implementation stores the current camera's orientation as a rotation matrix.
 This rotation matrix is then multiplied by rotation matrices that indicate the amount to rotate by whenever the camera's orientation is altered.
 The second implementation stores the current camera's orientation as a quaternion.
@@ -282,11 +282,6 @@ We suspect that this difference will only matter in situations where numerical s
 
 Finally, we have discovered that the Gram-Schmidt orthonormalisation that was used in this experiment has almost no cost associated with it, and indeed, sometimes saves computational time.
 The reason for this is likely related to compiler or central processing unit optimizations, but we leave further speculation on that front to future work.
-
-\section{Additional Materials}
-
-The full source code repository, as well as all collected data, will be released should the paper be accepted.
-For now, it has been removed to protect the anonymity of the researchers.
 
 \bibliographystyle{abbrv}
 \bibliography{main}
