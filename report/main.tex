@@ -35,17 +35,14 @@
 \maketitle
 
 \begin{abstract}
-Precious little research exists on the optimal way to represent interactive cameras with three degrees of freedom.
-These are cameras that can fly through a scene while rolling, pitching and yawing.
-In addition, they are controlled by a user through use of the mouse and keyboard.
-We investigate whether quaternions have the same numerical stability for this application area.
-Along the way, we note several interesting phenomena we perceived during the course of our research.
+Precious little research exists on the optimal way to represent interactive cameras with three degrees of freedom that are controlled by a user with a mouse and keyboard.
+We investigate whether quaternions have the comparable numerical stability with other implementations for this application area.
+Along the way, we note several interesting phenomena that were perceived during the course of our research.
 
-In order to test this numerical stability, we compare the stability of our quaternion camera implementation against the orthonormalised rotation matrix representation.
-This representation has some advantages: lack of gimbal lock and numerical stability.
-This comparison was performed by implementing both algorithms and subjecting them to various test runs in order to see how many of these either is best at.
+In order to test this numerical stability, we compare the quaternion camera implementation against the orthonormalised rotation matrix representation.
+This comparison was performed by implementing both algorithms and subjecting them to a number of test runs.
 
-The result of this comparison is somewhat surprising: the quaternion representation's strength is \emph{not} its numerical stability, but it's speed ---
+The result of this comparison is somewhat surprising: the strength of the quaternion representation is \emph{not} its numerical stability, but its speed ---
 an orthonormalised rotation matrix representation is more stable, but also requires slightly more computation.
 We also offer empirical evidence of the performance increase that can be obtained by using quaternions instead of rotation matrices.
 
@@ -92,22 +89,22 @@ The magnitude of this rotation becomes the length of a vector with a direction t
 \subsection{Rotation Matrices}
 
 Rotation matrices represent rotations as the components of a $3 \times 3$ matrix of real vlaues.
-Rotation matrices have to be kept orthonormal, if they deviate from this property then they will alter the length of vectors, leading to distortions in the shape of the objects being rotated \cite{diebel06}.
+Rotation matrices have to be kept orthonormal; if they deviate from this property then they will alter the length of vectors, leading to distortions in the shape of the objects being rotated \cite{diebel06}.
 
 \subsection{Quaternions}
 
 Quaternion representations use a three component imaginary number vector along with a scalar component to represent rotations in three dimensional space.
-They are convenient because composing rotations represented as quaternions is a simple matter of multiplying them together \cite{schoemake85}.
+They are convenient because composing rotations represented as quaternions is a simple matter of multiplying them together \cite{shoemake85}.
 Other properties make quaternions more desirable than the other representations discussed so far.
-For example, they are purportedly faster to compute than rotation matrices \cite{taylor79}, and they do not exhibit gimbal lock \cite{schoemake85}.
+For example, they are purportedly faster to compute than rotation matrices \cite{taylor79}, and they do not exhibit gimbal lock \cite{shoemake85}.
 
 \section{Related Work}
 
-The earliest mention of quaternions for use in representing rotations seem to be \cite{taylor79}, in which a novel method of robotic control is proposed.
-Somewhat later \cite{schoemake85} proposed a rotation animation method that uses quaternions to interpolate between key frames.
-That work claims that quaternions are best for interpolation \cite{schoemake85}.
-Pletinckx in 1989 describes quaternions and makes the important point that they are a less redundant representation of rotation than rotation matrices, since they only have four components and not nine \cite{pletinckx89}.
-The rest of that work motivates the use of quaternions in general graphics applications for such reasons as the fact that they are gimbal lock free \cite{pletinckx89} and can be used to solve animation, modelling and rendering problems \cite{pletinckx89}.
+The earliest mention of quaternions for use in representing rotations seem to be by Taylor \cite{taylor79}, in which a novel method of robotic control is proposed.
+Somewhat later Shoemake proposed a rotation animation method that uses quaternions to interpolate between key frames.
+His work claims that quaternions are best for interpolation \cite{shoemake85}.
+Pletinckx in 1989 describes quaternions and makes the important point that they are a less redundant representation of rotation than rotation matrices, since they only have four components and not nine.
+The rest of that work motivates the use of quaternions in general graphics applications for such reasons as the fact that they are gimbal lock free and can be used to solve animation, modelling and rendering problems \cite{pletinckx89}.
 Mukundan's work is a similar paper on the desirability of quaternions, pointing to applications in computer vision \cite{mukundan02}.
 Zupan presents a recent paper that describes a method for integrating rotation values from angular velocity through the use of quaternions \cite{zupan11}.
 In that paper, it was discovered that quaternion representations offer the least amount of numerical instability for this application area.
@@ -123,13 +120,13 @@ The quaternion is then multiplied by another quaternion that indicates the adjus
 We implement these camera algorithms as C++ templates and instantiate them with both single and double precision floating point types.
 Each implementation is also accompanied by a version that orthonormalises the rotation sub-matrix before it is sent to the shaders to be used as a view matrix.
 
-The user is now presented with a simple scene that contains some basic geometry to allow the user to orient him / herself.
+The user is now presented with a simple scene that contains some basic geometry to give the user a reference point for the orientation of the camera.
 By moving the mouse, the user can rotate the camera about its X or Y axes.
 Keyboard controls allow the user to move the camera forward, back and to the left and right.
 The keyboard also allows the user to ``roll'' the camera around the Z axis.
 
 The algorithms we tested are the normal rotation matrix implementation, the orthonormalised matrix implementation, the quaternion implementation, and an orthonormalised quaternion implementation.
-We tested an orthnormalised quaternion implementation as well, since the quaternion implementation was so much cheaper, it is fair to allow it to spend more time to obtain the same accuracy as the other methods.
+We tested an orthonormalised quaternion implementation as well, since the quaternion implementation was so much cheaper, it is fair to allow it to spend more time to obtain the same accuracy as the other methods.
 Unfortunately, this did not work out.
 The orthonormalisation technique that was used is the Gram-Schmidt method.
 
@@ -191,9 +188,9 @@ This turns out not to be the case, as the table in Figure \ref{fig:performance-t
 \label{fig:performance-table}
 \end{figure}
 
-Two interesting phenomena were observed during out experiment.
+Two interesting phenomena were observed during our experiment.
 First, the quaternion implementations are faster than the rotation matrix implementations.
-This is proof of Taylor's aside to that effect in his paper \cite{taylor79}, and Schoemake's affirmation of that statement \cite{schoemake85} --- quaternions are indeed much faster than rotation matrices.
+This is proof of Taylor's aside to that effect in his paper \cite{taylor79}, and Shoemake's affirmation of that statement \cite{shoemake85} --- quaternions are indeed much faster than rotation matrices.
 In fact, the speed increase is approximately an order of magnitude.
 
 Second, the orthonormalised version of the algorithms are often cheaper than the non-normalised version.
@@ -246,7 +243,7 @@ Next the quaternions must be multiplied.
 Consider two quaternions: $q_1$ and $q_2$.
 Now, each quaternion consists of one real part (which we can treat as a scalar) and an imaginary part (which we treat as a three-component vector).
 Label these scalars and vectors as $s_1$, $s_2$, $v_1$, $v_2$, respectively.
-If we rewrite $q_1$ as $\left[ \begin{array}{cc} s_1 & v_1 \end{array} \right]$ and $q_2$ as $\left[ \begin{array}{cc} s_2 & v_2 \end{array} \right]$ then quaternion multiplication is simply defined as $q_1 q_2 = \left[ \begin{array}{cc} s_1 s_2 - v_1 \cdot v_2 & s_1 v_2 + s_2 v_1 + v_1 \times v_2 \end{array} \right]$ \cite{schoemake85}.
+If we rewrite $q_1$ as $\left[ \begin{array}{cc} s_1 & v_1 \end{array} \right]$ and $q_2$ as $\left[ \begin{array}{cc} s_2 & v_2 \end{array} \right]$ then quaternion multiplication is simply defined as $q_1 q_2 = \left[ \begin{array}{cc} s_1 s_2 - v_1 \cdot v_2 & s_1 v_2 + s_2 v_1 + v_1 \times v_2 \end{array} \right]$ \cite{shoemake85}.
 This calculation involves 3 scalar multiplications, 1 addition, 1 subtraction, a dot product and a cross product.
 The dot product consists of 3 multiplies and 2 adds.
 The cross product comprises 6 multiplies and 3 subtractions.
